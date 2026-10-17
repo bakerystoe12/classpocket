@@ -663,7 +663,7 @@ The pipeline is unchanged: the LLM returns text, and the frontend turns it into 
 
 > Roles are based on what I understood of each person's strengths. **[CONFIRM each person agrees and has the skills.]** Every person owns something shippable, not just research.
 
-### Person 1: Technical lead and integration (you)
+### Person 1: Technical lead and integration 
 **Owns:** repo setup, architecture, shared types, app structure and screen flow, game state, boss logic, rematch logic, connecting frontend to backend, deployment.
 **Deliverable:** working app from pasted notes to battle to rematch.
 **Watch out:** don't write every feature yourself. Hand out self-contained components and protect your time for integration.
