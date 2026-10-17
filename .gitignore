@@ -5,3 +5,6 @@ data/
 !.env.example
 test-results/
 .npm-cache/
+*.tsbuildinfo
+preview.png
+social-preview.png

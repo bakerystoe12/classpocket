@@ -1,5 +1,7 @@
 # ClassPocket
 
+**New: focused topic sessions.** Open `/study` for the student topic feed or `/study/create` to upload/paste notes, review ten mission gizmos, and assign a class. Students finish the required ten or explicitly add same-topic practice. Read [TOPIC_SESSIONS.md](TOPIC_SESSIONS.md) and [HACKATHON_HANDOFF.md](HACKATHON_HANDOFF.md).
+
 **The primary app has been rebuilt as a social feed of ten playable gizmos.** Open `/` for Home, Studio, Activity, and Profile. Read [SOCIAL_MVP.md](SOCIAL_MVP.md) for the current product and verification details, and [the exact build prompt](../BUILD_PROMPT.md) for a reusable specification. No teacher login is required for the social app.
 
 The classroom documentation below describes the earlier educational workflow, now available at `/classroom`.
