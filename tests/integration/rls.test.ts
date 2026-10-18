@@ -79,3 +79,14 @@ test('lesson PDFs: only teachers upload, only into their own folder, and nobody 
  assert.ok((await T.client.storage.from('lesson-sources').uploadToSignedUrl(wrongType,s2.data!.token,Buffer.from('hello'),{contentType:'text/plain'})).error,'bucket rejects non-PDF types');
  await T.client.storage.from('lesson-sources').remove([path]);
 });
+test('creator shares: owners see their own links; browsers cannot mint, revoke or remix through the database',async()=>{
+ const a=admin(),token='a'.repeat(8)+uuid().replace(/-/g,'').slice(0,32)+'b'.repeat(8);
+ assert.equal((await a.rpc('create_share',{p_actor:A.id,p_gizmo:draftId,p_version:1,p_visibility:'private',p_token:token})).error,null);
+ assert.equal((await A.client.from('creator_shares').select('token').eq('token',token)).data!.length,1);
+ assert.equal((await B.client.from('creator_shares').select('token').eq('token',token)).data!.length,0,'other users cannot list share tokens');
+ assert.equal((await B.client.rpc('creator_share',{p_token:token})).data.gizmo.title,planetHopTemplate.title,'holding the token is enough to play');
+ denied(await B.client.from('creator_shares').insert({token:'c'.repeat(48),gizmo_id:draftId,version:1,owner_id:B.id,snapshot:{},visibility:'public'}),'insert share');
+ denied(await B.client.from('creator_shares').update({revoked:true}).eq('token',token).select('token').then(r=>r.data?.length?r:{error:{message:'no rows'}}),'revoke via REST');
+ for(const [fn,args] of [['create_share',{p_actor:B.id,p_gizmo:draftId,p_version:1,p_visibility:'public',p_token:'d'.repeat(48)}],['revoke_share',{p_actor:A.id,p_token:token}],['remix_share',{p_actor:B.id,p_token:token,p_id:'g-000000000000000000'}],['unpublish_gizmo',{p_actor:A.id,p_id:draftId}]] as const)denied(await B.client.rpc(fn,args),fn);
+ denied(await B.client.from('creator_forks').insert({gizmo_id:draftId,parent_id:'x',parent_version:1,parent_token:token,parent_creator:'x',parent_title:'x'}),'forge lineage');
+});

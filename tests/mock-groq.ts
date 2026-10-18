@@ -2,6 +2,7 @@
 // It returns hand-written fixtures; passing tests against it does not prove a live model works.
 import {createServer} from 'node:http';
 import * as fx from './fixtures/model-outputs';
+import {proposalFor} from '../lib/creator-model';
 export function startMockGroq(port=4010){
  const log:{at:number;body:unknown}[]=[];
  const server=createServer(async(req,res)=>{
@@ -15,6 +16,7 @@ export function startMockGroq(port=4010){
   if(/slowpoke/i.test(user)){await new Promise(r=>setTimeout(r,8000));if(!res.destroyed)send(fx.catPlanet);return;}
   if(/badjson/i.test(user))return send('{not json');
   if(/cutoff/i.test(user))return send('{"engine":"jum',"length");
+  if(name==='classpocket_world'){if(/refuse-me/i.test(user)){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({choices:[{finish_reason:'stop',message:{content:null,refusal:'Unsupported request'}}]}));return;}const p=proposalFor('jump');p.world.gravity=/unreachable/i.test(user)?25:1.62;p.accent='#f28c28';return send(p);}
   if(name==='ideas')return send({refused:false,ideas:['A cat that jumps on every planet in the solar system','A lander that must touch down on Titan','A spring pad that launches a goblin over a wall']});
   if(/refuse-me/i.test(user))return send(fx.refusal);
   if(/unreachable|cannot be reached/i.test(user))return send(fx.unreachable);

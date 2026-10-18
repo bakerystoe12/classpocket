@@ -5,6 +5,7 @@ import type {Gizmo} from '@/lib/gizmos';
 import {engineSpecs,controlRange} from '@/lib/gizmo-spec';
 import InteractiveWidgets from './InteractiveWidgets';
 import PlanetHop from './PlanetHop';
+import CreatorWorld from './CreatorWorld';
 export type MetricSink=(m:Record<string,number>)=>void;
 type Dot={x:number;y:number;vx:number;vy:number;r:number;h:number;ox?:number;oy?:number};
 type Scene={distance:number;lastX:number;lastY:number;steerV:number;t:number;px:number;py:number;down:boolean;started:boolean;ended:string;dots:Dot[];bodies:Dot[];cut:Set<number>;ship:{x:number;y:number;vx:number;vy:number;a:number};fuel:number;cash:number;value:number;auto:number;dropped:number;phase:number;frozen:boolean;palette:number;score:number;car:number;target:number;launch:boolean;keys:Set<string>};
@@ -76,7 +77,7 @@ export default function GizmoCanvas({gizmo,active=true,small=false}:{gizmo:Gizmo
  useEffect(()=>{setLive(gizmo.params);setMetrics({});},[key]);// eslint-disable-line react-hooks/exhaustive-deps
  const g={...gizmo,params:live},onMetric=(m:Record<string,number>)=>setMetrics(old=>({...old,...m}));
  const spec=engineSpecs[g.engine],tunable=g.controls.filter(c=>!(builtIn[g.engine]||[]).includes(c.param)),done=met(g,metrics);
- const inner=g.engine==='jumper'?<PlanetHop gizmo={g} active={active} small={small} onMetric={onMetric}/>:classic.includes(g.engine)?<ClassicCanvas gizmo={g} active={active} small={small} onMetric={onMetric}/>:<InteractiveWidgets gizmo={g} active={active} small={small} onMetric={onMetric}/>;
+ const inner=g.world?<CreatorWorld gizmo={g} active={active} small={small}/>:g.engine==='jumper'?<PlanetHop gizmo={g} active={active} small={small} onMetric={onMetric}/>:classic.includes(g.engine)?<ClassicCanvas gizmo={g} active={active} small={small} onMetric={onMetric}/>:<InteractiveWidgets gizmo={g} active={active} small={small} onMetric={onMetric}/>;
  if(small)return inner;
  return <div className="gizmo-shell">{inner}
   {g.challenge&&<div className={`gizmo-goal ${done?'is-done':''}`} role="status"><strong>{done?'✓ Goal reached':'Goal'}</strong><span>{g.challenge.label}</span>{done&&g.feedback.success&&<small>{g.feedback.success}</small>}{!done&&metrics[g.challenge.metric]!==undefined&&<small>Now {Number(metrics[g.challenge.metric].toFixed(2))} {spec.metrics[g.challenge.metric]?.unit}{g.feedback.retry?' · '+g.feedback.retry:''}</small>}</div>}

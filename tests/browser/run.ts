@@ -79,6 +79,23 @@ await step('capture downloads a real PNG of the interaction',async()=>{
  const post=await findPost(A,'particle-universe');const [download]=await Promise.all([A.waitForEvent('download'),post.getByRole('button',{name:/^Capture/}).click()]);
  assert.match(download.suggestedFilename(),/\.png$/);const path=`${OUT}/capture.png`;await download.saveAs(path);
 });
+await step('creator pilot: make, share privately with QR, remix in another browser, publish to the showcase',async()=>{
+ const c=await browser.newContext({viewport:{width:390,height:844}}),C=await c.newPage();watch(C,'C');await C.goto(BASE);await enterWelcome(C,/./);
+ await C.getByRole('button',{name:/Try the creator demo/}).click();await C.getByLabel('Creator display name').fill('Judge Alpha');await C.getByRole('button',{name:'Start creating',exact:true}).click();await C.getByText('Creating as',{exact:false}).waitFor();
+ await C.getByRole('button',{name:'New experiment',exact:true}).click();await C.getByLabel('Creator gizmo name',{exact:true}).fill('Judge Alpha Mars Cat');await C.getByLabel('Starting Gravity (m/s²)',{exact:true}).fill('3.71');
+ await C.getByRole('button',{name:'Launch cat',exact:true}).click();await C.getByRole('status').filter({hasText:'peak 3.37 m'}).waitFor();
+ await C.getByRole('button',{name:'Share privately',exact:true}).click();const link=C.getByLabel('Gizmo snapshot link',{exact:true});await link.waitFor();const url=await link.inputValue();assert.match(url,/\/g\/[a-f0-9]{48}$/);await C.getByAltText('QR code to this saved gizmo version').waitFor();
+ const d=await browser.newContext({viewport:{width:390,height:844}}),Dp=await d.newPage();watch(Dp,'Dp');await Dp.goto(url);await Dp.getByRole('heading',{name:'Judge Alpha Mars Cat',exact:true}).waitFor();
+ await Dp.getByRole('button',{name:'Remix this gizmo',exact:true}).click();await Dp.getByLabel('Remix display name',{exact:true}).fill('Judge Beta');await Dp.getByRole('button',{name:'Create my remix',exact:true}).click();await Dp.waitForURL('**/make?draft=*');
+ await Dp.getByLabel('Creator gizmo name',{exact:true}).fill('Judge Beta Moon Cat');await Dp.getByLabel('Starting Gravity (m/s²)',{exact:true}).fill('1.62');await Dp.getByRole('status').filter({hasText:'peak 7.72 m'}).waitFor();
+ await Dp.getByRole('button',{name:'Publish to showcase',exact:true}).click();await Dp.getByLabel('Gizmo snapshot link',{exact:true}).waitFor();await Dp.screenshot({path:`${OUT}/09-creator-remix.png`});
+ await C.getByRole('button',{name:'Refresh live showcase',exact:true}).click();await C.locator('.creator-showcase').getByText('Judge Beta Moon Cat',{exact:true}).waitFor();
+ for(const [template,field,value,expect] of [['circuit','Starting Voltage (V)','12','1.20 A current · 14.40 W power'],['light','Starting Green light (%)','100','RGB 255, 255, 0'],['solar','Starting Panel area (m²)','2','200.0 W power · 200.0 J collected']] as const){
+  await Dp.getByLabel('Creator template',{exact:true}).selectOption(template);await Dp.getByRole('button',{name:'New experiment',exact:true}).click();await Dp.getByLabel(field,{exact:true}).fill(value);
+  if(template==='circuit')await Dp.getByRole('button',{name:'Close switch',exact:true}).click();if(template==='solar')await Dp.getByRole('button',{name:'Collect for 1 second',exact:true}).click();
+  await Dp.getByRole('status').filter({hasText:expect}).waitFor();}
+ await noOverflow(Dp,'creator mobile');await c.close();await d.close();
+});
 await step('desktop layout keeps the immersive feed without horizontal scrolling',async()=>{
  const d=await browser.newContext({viewport:{width:1280,height:800}}),D=await d.newPage();watch(D,'D');await D.goto(BASE);await enterWelcome(D,/./);await D.keyboard.press('Escape');await D.locator('[data-post]').first().waitFor();
  await noOverflow(D,'desktop');await D.screenshot({path:`${OUT}/08-desktop.png`});await d.close();

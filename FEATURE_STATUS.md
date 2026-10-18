@@ -7,9 +7,9 @@ Legend: **Implemented** = working code backed by Supabase and covered by automat
 | Check | Result |
 | --- | --- |
 | `npm run typecheck` | pass |
-| `npm test` (unit) | 38/38 pass: formulas, energy conservation, decay statistics with a seeded RNG, schema and semantics, timetable boundaries, midnight and DST, AI output conversion, screening |
+| `npm test` (unit) | 42/42 pass: formulas, energy conservation, decay statistics with a seeded RNG, schema and semantics, timetable boundaries, midnight and DST, AI output conversion, screening |
 | `npm run build` with no environment at all | pass: the build contacts no database |
-| `npm run test:integration` | 22/22 pass against local Supabase (Postgres 17, GoTrue, PostgREST, Storage via `supabase start`) and the **mock** Groq server |
+| `npm run test:integration` | 26/26 pass against local Supabase (Postgres 17, GoTrue, PostgREST, Storage via `supabase start`) and the **mock** Groq server |
 | `npm run test:browser` | pass: Chromium with two independent profiles (390×844) plus desktop 1280×800, no page errors, no horizontal overflow |
 | Live Groq call | **Not yet verified**: no key was available. The missing-key path is verified. |
 | Vercel deployment | **Not yet verified**: no Vercel or Supabase account was available. See DEPLOYMENT.md §7 for the exact checks. |
@@ -33,6 +33,7 @@ Legend: **Implemented** = working code backed by Supabase and covered by automat
 | Server-enforced class feed | Implemented | `/api/feed` uses the server clock and the saved (or teacher-managed) timetable. For you, Following, Learn and search are all restricted. The judge preview can only narrow. Direct links stay open (not an access firewall). |
 | Teacher-managed timetables and enrolment codes | Implemented | Students cannot edit, replace or unlink through the UI, the REST API or RPC. Only the publishing teacher can release them. |
 | Teacher accounts | Implemented | Supabase email/password with the role granted by the `npm run admin:teacher` script. Anonymous identities can never hold roles. |
+| Creator pilot `/make`, `/g/[token]` | Implemented · AI-generated (when configured) · Mocked in tests | Five bounded experiment worlds; private links with QR codes; immutable snapshots; remixes owned by their maker, with protected attribution; public showcase; revoke and unpublish. Ported from the SQLite pilot to Supabase. |
 | Friends invite rooms | Implemented | Immutable snapshot, persisted membership, private membership lists. Controls are per participant: **not** synchronised multiplayer. |
 | Topic sessions `/study` | Implemented | Ten required missions graded on the server; optional same-topic practice after completion; immutable assignments; teacher results from real attempt records. Students don't receive full source pages. |
 | PDF upload | Implemented | Signed direct-to-storage upload (up to 10 MB, tested with a 6 MB file), page-preserving extraction, then the file is deleted. No OCR: scanned PDFs get a paste-text message. |

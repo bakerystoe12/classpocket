@@ -3,6 +3,7 @@
 A social feed of miniature interactive science worlds whose recommendations follow a student's class timetable. Students play with twenty different Physics gizmos, describe and remix their own in Studio, and invite friends into saved snapshots. Teachers turn lesson notes into ten-mission topic sessions and manage class timetables.
 
 - **Status:** the code, database migrations, tests and docs for the Vercel + Supabase + Groq version are complete. They are verified against a local Supabase stack and a **mock** Groq endpoint. A live Vercel deployment and a live Groq call have **not** been verified yet because no Vercel, Supabase or Groq accounts were available while it was built. [FEATURE_STATUS.md](FEATURE_STATUS.md) lists exactly what is implemented, authored, AI-generated, mocked or future work.
+- **Creator pilot:** open `/make` (or **Try the creator demo** on the welcome). Make a configurable Physics experiment, share an immutable snapshot by link/QR, let someone else remix it, publish to the showcase. See [CREATOR_PILOT.md](CREATOR_PILOT.md).
 - **Deploy:** [DEPLOYMENT.md](DEPLOYMENT.md) · **Demo:** [JUDGE_SCRIPT.md](JUDGE_SCRIPT.md) · **Original team plan (unchanged):** [docs/TEAM_PLAN.md](docs/TEAM_PLAN.md)
 
 Redirecting some otherwise idle scrolling toward the current lesson is a product ambition. ClassPocket makes no claim of measured attention, retention, health or learning benefit, and has no school approval.
@@ -52,7 +53,7 @@ Open http://localhost:3000. Without Supabase configuration the app still builds 
 
 ```bash
 npm run typecheck
-npm test                    # 38 unit tests: physics formulas, schema/semantics, timetable/DST, AI conversion, screening
+npm test                    # 42 unit tests: physics formulas, schema/semantics, timetable/DST, AI conversion, screening, creator worlds
 ```
 
 Integration and browser tests need the local Supabase stack, a production build and the **mock** Groq server:
@@ -62,7 +63,7 @@ npm run mock:groq &                                                # MOCK provid
 npm run build
 GROQ_API_KEY=test-groq-key GROQ_BASE_URL=http://127.0.0.1:4010 AI_TIMEOUT_MS=4000 \
   AI_GUEST_DAILY_LIMIT=40 AI_USER_DAILY_LIMIT=40 npm start &
-npm run test:integration    # 22 tests: RLS/privileges, API journeys, timetable enforcement, AI pipeline, lessons, 6 MB PDF upload
+npm run test:integration    # 26 tests: RLS/privileges, API journeys, timetable enforcement, AI pipeline, creator sharing/remix, lessons, 6 MB PDF upload
 npm run test:browser        # Playwright journey with two browser profiles; screenshots in test-results/
 ```
 
