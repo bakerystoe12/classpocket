@@ -1,22 +1,31 @@
-import { NextRequest,NextResponse } from 'next/server';
-import { randomBytes,randomUUID } from 'node:crypto';
-import {database as db,now} from '@/lib/db';
-import {gizmos,gizmoSchema,demoCreators} from '@/lib/gizmos';
 import {z} from 'zod';
+import {route,json,readJson,HttpError} from '@/lib/server/http';
+import {requireActor} from '@/lib/server/auth';
+import * as social from '@/lib/server/social';
 export const runtime='nodejs';export const dynamic='force-dynamic';
-import '@/lib/social-store';
-function state(user:string){const profile=db.prepare('SELECT handle,name,bio FROM social_profiles WHERE id=?').get(user);const posts=(db.prepare('SELECT content,owner,version FROM social_posts WHERE owner=? OR json_extract(content,\'$.published\')=1 ORDER BY created DESC').all(user) as {content:string;owner:string;version:number}[]).map(p=>({...JSON.parse(p.content),owned:p.owner===user,version:p.version}));const reactions=db.prepare('SELECT post,kind FROM social_reactions WHERE user=?').all(user);const counts=db.prepare('SELECT post,kind,count(*) as count FROM social_reactions GROUP BY post,kind').all();const comments=db.prepare('SELECT c.id,c.post,c.text,c.created,p.handle FROM social_comments c JOIN social_profiles p ON p.id=c.user ORDER BY c.created').all();return {profile,posts,reactions,counts,comments,followers:Number((db.prepare('SELECT count(*) as count FROM social_follows WHERE creator=?').get(String(profile?.handle||'')) as {count:number}).count),following:db.prepare('SELECT creator FROM social_follows WHERE user=?').all(user),events:db.prepare('SELECT text,created FROM social_events WHERE user=? ORDER BY created DESC LIMIT 30').all(user)};}
-async function handler(req:NextRequest){try{if(req.method==='POST'&&req.headers.get('origin')&&new URL(req.headers.get('origin')!).host!==req.headers.get('host'))return NextResponse.json({error:'Origin not allowed'},{status:403});let user=req.cookies.get('cp_social')?.value;if(!user||!db.prepare('SELECT id FROM social_profiles WHERE id=?').get(user)){user=randomBytes(24).toString('hex');db.prepare('INSERT INTO social_profiles VALUES(?,?,?,?)').run(user,`maker_${user.slice(0,5)}`,'You','Making little things worth playing.');}
- const event=(text:string)=>db.prepare('INSERT INTO social_events VALUES(?,?,?,?)').run(randomUUID(),user!,text,now());
- if(req.method==='POST'){const b=await req.json();const action=z.enum(['profile','reaction','follow','comment','save','restore','remix']).parse(b.action);
- if(action==='profile'){const p=z.object({handle:z.string().regex(/^[a-zA-Z0-9_.]{2,25}$/),name:z.string().trim().min(1).max(40),bio:z.string().max(160)}).parse(b.profile);if(demoCreators.some(c=>c.handle.toLowerCase()===p.handle.toLowerCase())||db.prepare('SELECT id FROM social_profiles WHERE lower(handle)=lower(?) AND id!=?').get(p.handle,user))throw new Error('That username is already taken.');const old=db.prepare('SELECT handle FROM social_profiles WHERE id=?').get(user) as {handle:string};db.exec('BEGIN IMMEDIATE');try{db.prepare('UPDATE social_profiles SET handle=?,name=?,bio=? WHERE id=?').run(p.handle,p.name,p.bio,user);for(const row of db.prepare('SELECT id,content FROM social_posts WHERE owner=?').all(user) as {id:string;content:string}[])db.prepare('UPDATE social_posts SET content=? WHERE id=?').run(JSON.stringify({...JSON.parse(row.content),creator:p.handle,creatorName:p.name}),row.id);db.prepare('UPDATE OR IGNORE social_follows SET creator=? WHERE creator=?').run(p.handle,old.handle);db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}}
- if(action==='reaction'){const kind=z.enum(['like','save','repost']).parse(b.kind),post=z.string().max(100).parse(b.post);if(db.prepare('SELECT user FROM social_reactions WHERE user=? AND post=? AND kind=?').get(user,post,kind))db.prepare('DELETE FROM social_reactions WHERE user=? AND post=? AND kind=?').run(user,post,kind);else{db.prepare('INSERT INTO social_reactions VALUES(?,?,?)').run(user,post,kind);event(`${kind==='like'?'Liked':kind==='save'?'Saved':'Reposted'} ${b.title?String(b.title).slice(0,70):'a gizmo'}`);}}
- if(action==='follow'){const creator=z.string().min(1).max(40).parse(b.creator);if(db.prepare('SELECT user FROM social_follows WHERE user=? AND creator=?').get(user,creator))db.prepare('DELETE FROM social_follows WHERE user=? AND creator=?').run(user,creator);else{db.prepare('INSERT INTO social_follows VALUES(?,?)').run(user,creator);event(`Followed @${creator}`);}}
- if(action==='comment'){const text=z.string().trim().min(1).max(500).parse(b.text),post=z.string().max(100).parse(b.post);db.prepare('INSERT INTO social_comments VALUES(?,?,?,?,?)').run(randomUUID(),user,post,text,now());event('Left a comment on a gizmo');}
- if(action==='save'||action==='remix'){const profile=db.prepare('SELECT handle FROM social_profiles WHERE id=?').get(user) as {handle:string};let input=b.gizmo;if(action==='remix'){const original=gizmos.find(p=>p.id===b.post)||(db.prepare('SELECT content FROM social_posts WHERE id=? AND (owner=? OR json_extract(content,\'$.published\')=1)').get(b.post,user) as {content:string}|undefined);if(!original)throw new Error('Gizmo not found.');const p='content' in original?JSON.parse(original.content):original;input={...p,id:randomUUID(),title:`${p.title} remix`.slice(0,70),creator:profile.handle,published:false,attribution:`Remixed from ${p.title} by @${p.creator}`};}
- const content=gizmoSchema.parse({...input,creator:profile.handle});const prev=db.prepare('SELECT owner,version FROM social_posts WHERE id=?').get(content.id) as {owner:string;version:number}|undefined;if(gizmos.some(p=>p.id===content.id)||prev&&prev.owner!==user)return NextResponse.json({error:'Only the owner can edit this gizmo.'},{status:403});if(prev&&b.version!==prev.version)throw new Error('This draft changed in another tab. Reopen it before saving.');const version=(prev?.version||0)+1;db.exec('BEGIN IMMEDIATE');try{db.prepare('INSERT OR REPLACE INTO social_posts VALUES(?,?,?,?,?)').run(content.id,user,JSON.stringify(content),version,now());db.prepare('INSERT INTO social_versions VALUES(?,?,?,?,?,?)').run(randomUUID(),content.id,user,version,JSON.stringify(content),now());event(`${content.published?'Published':'Saved draft'}: ${content.title}`);db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}}
- if(action==='restore'){const row=db.prepare('SELECT content FROM social_versions WHERE post=? AND owner=? AND version=?').get(b.post,user,b.version) as {content:string}|undefined;const current=db.prepare('SELECT version FROM social_posts WHERE id=? AND owner=?').get(b.post,user) as {version:number}|undefined;if(!row||!current)throw new Error('Saved version not found.');const v=current.version+1,content={...JSON.parse(row.content),published:false};db.exec('BEGIN IMMEDIATE');try{db.prepare('UPDATE social_posts SET content=?,version=? WHERE id=? AND owner=?').run(JSON.stringify(content),v,b.post,user);db.prepare('INSERT INTO social_versions VALUES(?,?,?,?,?,?)').run(randomUUID(),b.post,user,v,JSON.stringify(content),now());event(`Restored ${content.title} as a new draft version`);db.exec('COMMIT');}catch(e){db.exec('ROLLBACK');throw e;}}
+export const GET=route(async req=>{
+ const actor=await requireActor(),q=req.nextUrl.searchParams;
+ if(q.get('comments'))return json({comments:await social.comments(actor,q.get('comments')!)});
+ if(q.get('draft'))return json(await social.draft(actor,q.get('draft')!));
+ if(q.get('profile'))return json(await social.profileView(actor,q.get('profile')!,q.get('cursor')));
+ const list=q.get('list');
+ if(list){const kind=z.enum(['posts','like','save','repost']).parse(list);return json({posts:kind==='posts'?await social.myPublished(actor):await social.reactionList(actor,kind)});}
+ return json(await social.me(actor));
+});
+export const POST=route(async req=>{
+ const actor=await requireActor(),b=await readJson(req);
+ switch(b.action){
+  case 'reaction':return json(await social.setReaction(actor,b));
+  case 'follow':await social.setFollow(actor,b);return json(await social.me(actor));
+  case 'comment':return json({comments:await social.addComment(actor,b)});
+  case 'report':await social.report(actor,b);return json({ok:true});
+  case 'profile':await social.updateProfile(actor,b.profile);return json(await social.me(actor));
+  case 'save':{const saved=await social.saveManual(actor,b);return json(await social.draft(actor,saved.id));}
+  case 'publish':{await social.publish(actor,b);return json(await social.draft(actor,String(b.id)));}
+  case 'unpublish':await social.unpublish(actor,b);return json(await social.draft(actor,String(b.id)));
+  case 'restore':{const r=await social.restore(actor,b);return json(await social.draft(actor,r.id));}
+  case 'remix':{const r=await social.remix(actor,b);return json(await social.draft(actor,r.id));}
+  case 'delete-account':if(b.confirm!=='DELETE')throw new HttpError(400,'Type DELETE to confirm.');await social.deleteAccount(actor);await actor.supabase.auth.signOut().catch(()=>{});return json({deleted:true});
+  default:throw new HttpError(400,'Unknown action.');
  }
- const data=state(user);const versions=db.prepare('SELECT post,version,created FROM social_versions WHERE owner=? ORDER BY version DESC').all(user);const res=NextResponse.json({...data,versions},{headers:{'Cache-Control':'no-store'}});res.cookies.set('cp_social',user,{httpOnly:true,sameSite:'lax',secure:req.nextUrl.protocol==='https:',maxAge:31536000,path:'/'});return res;
- }catch(e){return NextResponse.json({error:e instanceof Error?e.message:'Request failed'},{status:400});}}
-export {handler as GET,handler as POST};
+});

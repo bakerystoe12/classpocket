@@ -1,0 +1,10 @@
+import {route,json,readJson,HttpError} from '@/lib/server/http';
+import {requireActor} from '@/lib/server/auth';
+import {aiConfig} from '@/lib/env';
+import {generateGizmo,generateIdeas} from '@/lib/server/studio';
+export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=60;
+export const GET=route(async()=>{const cfg=aiConfig();return json({ai:cfg?{provider:'groq',model:cfg.model}:null});});
+export const POST=route(async req=>{const actor=await requireActor(),b=await readJson(req);
+ if(b.action==='generate')return json(await generateGizmo(actor,b));
+ if(b.action==='ideas')return json(await generateIdeas(actor,b));
+ throw new HttpError(400,'Unknown Studio action.');});

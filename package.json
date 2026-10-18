@@ -1,1 +1,49 @@
-{"name":"classpocket","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"next dev --webpack --hostname 0.0.0.0","build":"next build --webpack","start":"next start --hostname 0.0.0.0","test":"tsx --test tests/*.test.ts","test:e2e":"tsx tests/journey.ts","test:browser":"tsx tests/browser.ts"},"dependencies":{"@tailwindcss/postcss":"^4.1.0","lucide-react":"^0.468.0","next":"^16.0.0","openai":"^6.0.0","pdf-parse":"^2.4.5","qrcode":"^1.5.4","react":"^19.2.0","react-dom":"^19.2.0","tailwindcss":"^4.1.0","zod":"^4.0.0"},"devDependencies":{"@playwright/test":"^1.56.0","@types/node":"^24.0.0","@types/qrcode":"^1.5.6","@types/react":"^19.0.0","@types/react-dom":"^19.0.0","tsx":"^4.20.0","typescript":"^5.9.0"}}
+{
+  "name": "classpocket",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/unit/*.test.ts",
+    "test:integration": "tsx --test --test-concurrency=1 tests/integration/*.test.ts",
+    "test:browser": "tsx tests/browser/run.ts",
+    "db:start": "npx -y supabase@2 start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,mailpit,realtime",
+    "db:reset": "npx -y supabase@2 db reset",
+    "db:seed": "tsx scripts/seed.ts",
+    "admin:teacher": "tsx scripts/grant-teacher.ts",
+    "admin:revoke-teacher": "tsx scripts/revoke-teacher.ts",
+    "import:sqlite": "tsx scripts/import-sqlite.ts",
+    "db:push": "npx -y supabase@2 db push",
+    "mock:groq": "tsx tests/mock-groq.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tailwindcss/postcss": "^4.1.0",
+    "lucide-react": "^0.468.0",
+    "next": "^16.0.0",
+    "pdf-parse": "^2.4.5",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "server-only": "^0.0.1",
+    "tailwindcss": "^4.1.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

@@ -1,3 +1,5 @@
+> **Historical document.** This describes the earlier SQLite / tunnel demo. The current app runs on Vercel + Supabase (+ optional Groq) — see [README.md](README.md), [DEPLOYMENT.md](DEPLOYMENT.md) and [FEATURE_STATUS.md](FEATURE_STATUS.md). Links such as temporary tunnel URLs and the shared demo teacher password below no longer apply.
+
 # Topic sessions
 
 ClassPocket now connects its social-play UI to a focused study journey: **one lesson → ten assigned gizmos → finish, or explicitly add ten more on that same topic**.

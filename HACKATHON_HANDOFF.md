@@ -1,3 +1,5 @@
+> **Historical document.** This describes the earlier SQLite / tunnel demo. The current app runs on Vercel + Supabase (+ optional Groq) — see [README.md](README.md), [DEPLOYMENT.md](DEPLOYMENT.md) and [FEATURE_STATUS.md](FEATURE_STATUS.md). Links such as temporary tunnel URLs and the shared demo teacher password below no longer apply.
+
 # ClassPocket — judge handoff
 
 **Creator pilot:** the public demo now lets participants choose a name, create an experiment, share an immutable version by link/QR, and publish independent attributed remixes. Five new configurable experiment renderers change actual gravity, current, light, power or waves. The full two-browser journey passed on localhost and the actual public HTTPS URL, including ownership, version conflicts, private-parent isolation, revocation and unpublishing. See [CREATOR_PILOT.md](CREATOR_PILOT.md). Groq generation is implemented but has only been tested with simulated provider responses because no live key was configured at verification time. Manual creation works without a key. The existing SQLite hosting model has not been migrated to Vercel.

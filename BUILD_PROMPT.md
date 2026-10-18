@@ -1,3 +1,5 @@
+> **Historical document.** This describes the earlier SQLite / tunnel demo. The current app runs on Vercel + Supabase (+ optional Groq) — see [README.md](README.md), [DEPLOYMENT.md](DEPLOYMENT.md) and [FEATURE_STATUS.md](FEATURE_STATUS.md). Links such as temporary tunnel URLs and the shared demo teacher password below no longer apply.
+
 Build ClassPocket: a working hackathon MVP of an educational social app inspired by the supplied Pocket screenshots. Its central product is a feed of playable educational gizmos with absurd, memorable setups. The player must use the science to make the joke's situation work. Keep the scope honest and the app runnable without a paid model key.
 
 Product and visual direction

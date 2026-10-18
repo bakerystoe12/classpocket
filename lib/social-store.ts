@@ -1,8 +1,0 @@
-import {database as db} from './db';
-db.exec(`CREATE TABLE IF NOT EXISTS social_profiles (id TEXT PRIMARY KEY,handle TEXT NOT NULL,name TEXT NOT NULL,bio TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS social_posts (id TEXT PRIMARY KEY,owner TEXT NOT NULL,content TEXT NOT NULL,version INTEGER NOT NULL,created TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS social_versions (id TEXT PRIMARY KEY,post TEXT NOT NULL,owner TEXT NOT NULL,version INTEGER NOT NULL,content TEXT NOT NULL,created TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS social_reactions (user TEXT NOT NULL,post TEXT NOT NULL,kind TEXT NOT NULL,PRIMARY KEY(user,post,kind));
-CREATE TABLE IF NOT EXISTS social_comments (id TEXT PRIMARY KEY,user TEXT NOT NULL,post TEXT NOT NULL,text TEXT NOT NULL,created TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS social_follows (user TEXT NOT NULL,creator TEXT NOT NULL,PRIMARY KEY(user,creator));
-CREATE TABLE IF NOT EXISTS social_events (id TEXT PRIMARY KEY,user TEXT NOT NULL,text TEXT NOT NULL,created TEXT NOT NULL);`);

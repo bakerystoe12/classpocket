@@ -1,3 +1,4 @@
 import type { NextConfig } from 'next';
-const config: NextConfig = { serverExternalPackages: ['pdf-parse'], experimental: { serverActions: { bodySizeLimit: '12mb' } } };
+// pdf-parse stays a runtime dependency of the Node.js functions rather than being bundled.
+const config: NextConfig = { serverExternalPackages: ['pdf-parse'] };
 export default config;

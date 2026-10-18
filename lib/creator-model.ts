@@ -14,7 +14,7 @@ export const worldDefaults:CreatorWorld={template:'jump',object:'cat',gravity:3.
 export const proposalSchema=z.object({title:z.string().trim().min(1).max(70),caption:z.string().trim().min(1).max(240),instructions:z.string().trim().min(1).max(300),accent:z.string().regex(/^#[0-9a-fA-F]{6}$/),world:worldSchema}).strict();
 export type CreatorProposal=z.infer<typeof proposalSchema>;
 export function validateProposal(value:unknown){const p=proposalSchema.parse(value);if(p.world.template==='jump'&&p.world.goalHeight>p.world.launchSpeed**2/(2*p.world.gravity))throw new Error('Jump goal is unreachable. Lower the target or increase launch speed.');return p;}
-export const templateEngine={jump:'lander',circuit:'circuit',light:'mixer',solar:'ecosystem',waves:'waves'} as const;
+export const templateEngine={jump:'jumper',circuit:'circuit',light:'mixer',solar:'ecosystem',waves:'waves'} as const;
 export function proposalFor(template:CreatorWorld['template']):CreatorProposal{return {title:{jump:'Cat on Mars',circuit:'Snack-powered circuit',light:'Light Kitchen',solar:'My solar sculpture',waves:'Two waves, one plot twist'}[template],caption:'A little experiment I made. Change a control and see what happens.',instructions:'Try the controls, compare the result, and remix it into your own experiment.',accent:'#c4a5ff',world:{...worldDefaults,template}};}
 export const parameterFields:{[K in CreatorWorld['template']]:{key:keyof Omit<CreatorWorld,'template'|'object'>;label:string;min:number;max:number;step:number}[]}={
  jump:[{key:'gravity',label:'Gravity (m/s²)',min:.5,max:25,step:.01},{key:'launchSpeed',label:'Launch speed (m/s)',min:1,max:15,step:.1},{key:'goalHeight',label:'Target height (m)',min:.1,max:100,step:.1}],

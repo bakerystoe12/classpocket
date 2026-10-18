@@ -30,3 +30,6 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 .judge-demo/
+*.sqlite
+*.sqlite-*
+supabase/.temp/
