@@ -1,5 +1,8 @@
 # A feed with a school bell
 
+**Current Physics demo:** all twenty catalogue gizmos now teach Physics through their existing different interactions. A personalised schedule welcome appears before entering Home and again at a class-period change. See [PHYSICS_DEMO.md](PHYSICS_DEMO.md). Earlier mixed-subject catalogue descriptions below are historical; non-Physics timetable slots currently show a clear demo-content empty state.
+
+
 ClassPocket now opens with twenty distinct original interactive prompts, rather than a single-topic set of repeated game mechanics. The collection includes visual toys, simulations, creative tools and small games. Each post exposes its source prompt and subject tag. The fixed discovery order alternates subjects; likes do not train a persistent subject preference in this MVP.
 
 ## The unique feature

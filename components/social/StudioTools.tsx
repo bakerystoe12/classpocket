@@ -1,8 +1,8 @@
 'use client';
 import {useState} from 'react';
 import {Lightbulb,Image as ImageIcon,Music,Film,WandSparkles,Download,ArrowUpRight} from 'lucide-react';
-const ideas=['A circuit that feeds a tiny lightbulb when I close the loop','An electron goblin that steals electrons from my atom','A fractal broccoli forest with an angle slider','A four-track beat sequencer for my desk drum band','A terrarium where I control sunlight and water'];
-const images=[{id:'orbit',title:'Cosmic postcard',src:'/studio/orbit.svg',prompt:'A purple orbital universe I can explore'},{id:'garden',title:'Tiny garden',src:'/studio/garden.svg',prompt:'A terrarium where light and water change plant growth'},{id:'neon',title:'Liquid neon',src:'/studio/neon.svg',prompt:'A glowing light painting I can draw with my finger'}];
+const ideas=['A circuit that feeds a tiny lightbulb when I close the loop','An electron goblin that steals electrons from my atom','A laser beam splitter tree with an angle and depth slider','A beat sequencer with separate pitch-frequency and rhythm controls','A solar sculpture where I control irradiance and panel area'];
+const images=[{id:'orbit',title:'Cosmic postcard',src:'/studio/orbit.svg',prompt:'A purple orbital universe I can explore'},{id:'garden',title:'Tiny garden',src:'/studio/garden.svg',prompt:'A solar sculpture where irradiance and panel area change electrical power'},{id:'neon',title:'Liquid neon',src:'/studio/neon.svg',prompt:'A glowing light painting I can draw with my finger'}];
 export default function StudioTools({onIdea}:{onIdea:(idea:string)=>void}){
  const [tool,setTool]=useState(''),[prompt,setPrompt]=useState(''),[result,setResult]=useState('');
  const output=images.find(i=>i.id===result);

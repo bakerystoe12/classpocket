@@ -1,5 +1,8 @@
 # ClassPocket
 
+**Current Physics demo:** all twenty catalogue gizmos now teach Physics through their existing different interactions. A personalised schedule welcome appears before entering Home and again at a class-period change. See [PHYSICS_DEMO.md](PHYSICS_DEMO.md). Earlier mixed-subject catalogue descriptions below are historical; non-Physics timetable slots currently show a clear demo-content empty state.
+
+
 **Current demo:** twenty varied interactive prompts, the five curated Studio media tools, Friends invitation rooms, and a timetable-controlled feed. See [TIMED_FEED.md](TIMED_FEED.md) for the current three-minute journey, public-link setup and implementation limits. Older topic-session and educational-reel notes below describe retained secondary workflows.
 
 

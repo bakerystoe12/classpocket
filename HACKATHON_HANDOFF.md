@@ -1,5 +1,8 @@
 # ClassPocket — judge handoff
 
+**Current Physics demo:** all twenty catalogue gizmos now teach Physics through their existing different interactions. A personalised schedule welcome appears before entering Home and again at a class-period change. See [PHYSICS_DEMO.md](PHYSICS_DEMO.md). Earlier mixed-subject catalogue descriptions below are historical; non-Physics timetable slots currently show a clear demo-content empty state.
+
+
 ## What we built
 
 ClassPocket is a Pocket-inspired feed of twenty original interactive prompts: visual toys, creative tools, simulations and games. Its unique feature is a timetable-controlled recommendation feed. During Physics, the student gets Physics gizmos. At the end of class, the feed switches to the next subject or returns to mixed discovery, without a lingering subject boost from likes.
