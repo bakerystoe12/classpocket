@@ -1,5 +1,10 @@
 # ClassPocket
 
+## Educational reels revision
+
+The default Home feed is ten authored physics experiments: absurd hooks, force/distance controls, a prediction before the reveal, calculated consequences, causal feedback, and later recall/transfer. Chemistry has a separate ten-play atomic-charge session. Use PHYS02 and CHEM02; existing published classes remain unchanged. See [LEARNING_DESIGN.md](LEARNING_DESIGN.md) for exact scope and research references. Uploaded notes still use source-matching drafts, not automatically generated simulations.
+
+
 The running app is implemented in this branch. The team's original planning document is preserved unchanged in [docs/TEAM_PLAN.md](docs/TEAM_PLAN.md); it describes proposals, not the implemented feature status. See [HACKATHON_HANDOFF.md](HACKATHON_HANDOFF.md) for the current scope.
 
 **New: focused topic sessions.** Open `/study` for the student topic feed or `/study/create` to upload/paste notes, review ten mission gizmos, and assign a class. Students finish the required ten or explicitly add same-topic practice. Read [TOPIC_SESSIONS.md](TOPIC_SESSIONS.md) and [HACKATHON_HANDOFF.md](HACKATHON_HANDOFF.md).

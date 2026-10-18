@@ -1,5 +1,10 @@
 # Hackathon handoff
 
+## Educational reels revision
+
+The default Home feed is ten authored physics experiments: absurd hooks, force/distance controls, a prediction before the reveal, calculated consequences, causal feedback, and later recall/transfer. Chemistry has a separate ten-play atomic-charge session. Use PHYS02 and CHEM02; existing published classes remain unchanged. See [LEARNING_DESIGN.md](LEARNING_DESIGN.md) for exact scope and research references. Uploaded notes still use source-matching drafts, not automatically generated simulations.
+
+
 Handbook checked: https://app.sym.so/handbook/index.html#judging
 
 The handbook calls for a public live link, a repository/workspace link, a Scope Honesty Declaration, and a short description with dependency/service disclosure. It prioritizes working flows and architecture. The local app and this document do not replace a publicly reachable submission URL.
@@ -24,24 +29,24 @@ The problem hypothesis comes from a founder-reported conversation with a profess
 
 - Ten original hardcoded social-play demos and Home/Studio/Activity/Profile navigation.
 - Server-persisted guest profiles, likes, saves, reposts, follows, comments, project versions, remix attribution, and publishing. Share/copy links and canvas PNG capture.
-- Teacher sign-in, real PDF text extraction, pasted-note processing, and ten editable source-linked Concept Courier missions.
+- Teacher sign-in, real PDF text extraction, pasted-note matching, and authored beam/atomic-charge sessions with hooks, predictions, causal feedback and transfer.
 - Review-gated assignment publication with immutable class snapshots, six-character codes, student nickname sessions, discrete server-graded attempts, and results.
 - Ten required missions, explicit optional batches of ten on the same topic, preserved required completion, and manual topic switching.
 - SQLite persistence and server-side permission checks. The previous classroom workflow remains available.
 
 ### Partial
 
-- Automatic educational content creation uses extractive matching and one reusable arcade template. A teacher must review meaning, ambiguity, distractors, and source support. Short sources repeat concepts; optional practice remixes those concepts.
+- Automatic creation from arbitrary uploaded material uses extractive matching and the Courier template. The twenty authored experiments use two additional science engines. A teacher must review meaning, ambiguity, distractors, and source support. Short sources repeat concepts; optional practice remixes those concepts.
 - PDF support extracts text; it does not OCR scanned slides. PPTX is not supported.
 - Demo teacher access uses one shared teacher workspace; social creators use browser-bound guest sessions. Production school accounts, organizations, and account recovery are not built.
 - Physics and Chemistry category starters are included authored demo content. Uploaded/pasted material may use the other supported category labels after teacher review.
-- Results reflect deliveries and retries, not a definitive measure of understanding. Automated integration checks use a mobile browser emulator; a physical phone and public host have not been verified.
+- Results reflect experiment configurations, predictions, deliveries and retries, not a definitive measure of understanding. Automated integration checks use a mobile browser emulator; a physical phone and public host have not been verified.
 - Existing classroom server-side OpenAI integration is optional; successful model generation has not been verified with a valid key. It is not used by the new topic-session template path.
 
 ### Mocked / planned
 
 - Friend scenarios and suggested creator personas are explicitly labelled demo content; no genuine friend network is claimed.
-- Arbitrary AI-generated game code, more educational engines, paid custom-game subscriptions, payments, parent accounts, production moderation, and production school identity/SSO.
+- Arbitrary AI-generated game code, additional educational engines, paid custom-game subscriptions, payments, parent accounts, production moderation, and production school identity/SSO.
 - Public hosting remains pending deployment configuration. No public accessibility or horizontal scalability claim is made.
 
 ## Three-minute live demo outline
@@ -50,7 +55,7 @@ The problem hypothesis comes from a founder-reported conversation with a profess
 
 0:25–1:05 — Open `/study/create`. Use included synthetic Physics notes or a prepared text PDF. Show actual extracted pages and the ten filled missions. Briefly edit a clue, preview the game, check teacher review, and publish.
 
-1:05–1:55 — Open the student link in a separate session. Launch the ship and steer it into matching cargo. Show feedback and the source citation. For the live pitch, a clearly labelled previously completed demo run can show the end state; do not present skipped/API-driven test attempts as a live student's learning.
+1:05–1:55 — Open the student link in a separate session. Move the goose force along the beam, predict the outcome and run it. Show moment calculations, the memory cue and the source citation. For the live pitch, a clearly labelled previously completed demo run can show the end state; do not present skipped/API-driven test attempts as a live student's learning.
 
 1:55–2:25 — Show the required-ten completion screen, add ten optional missions, and show that the category and original completion stay unchanged. Explicitly switch to Chemistry.
 
