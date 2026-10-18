@@ -26,8 +26,8 @@ A working classroom hackathon demo: **Turn your slides into a lesson students ca
 Requires Node.js 24 (uses built-in `node:sqlite`) and npm.
 
 ```powershell
-git clone --branch classpocket-mvp https://github.com/rudecoder-web/SYM-AI.git
-cd SYM-AI
+git clone https://github.com/bakerystoe12/classpocket.git
+cd classpocket
 npm ci
 Copy-Item .env.example .env.local
 npm run dev

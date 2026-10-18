@@ -13,8 +13,8 @@ Our target is secondary-school students who already enjoy scrolling and teachers
 
 - Public judge demo: https://pool-proven-minds-italia.trycloudflare.com
 - Local preview: http://localhost:3000/
-- Source: https://github.com/rudecoder-web/SYM-AI/tree/classpocket-mvp
-- Team review: https://github.com/rudecoder-web/SYM-AI/pull/1
+- Source: https://github.com/bakerystoe12/classpocket
+- Earlier team review: https://github.com/rudecoder-web/SYM-AI/pull/1
 
 The public URL is a verified temporary Cloudflare Quick Tunnel to a separate demo server/database. The laptop and both processes must stay running. Restarting the tunnel changes the address. Permanent hosted infrastructure is not configured. The original team plan remains unchanged in docs/TEAM_PLAN.md.
 
