@@ -1,3 +1,5 @@
+> **Historical document.** This describes the earlier SQLite / tunnel demo. The current app runs on Vercel + Supabase (+ optional Groq) — see [README.md](README.md), [DEPLOYMENT.md](DEPLOYMENT.md) and [FEATURE_STATUS.md](FEATURE_STATUS.md). Links such as temporary tunnel URLs and the shared demo teacher password below no longer apply.
+
 # Physics demo and schedule welcome
 
 The current judge catalogue contains twenty different Physics interactions. The twenty existing IDs and engine types are retained; the catalogue has not become a set of multiple-choice questions.
