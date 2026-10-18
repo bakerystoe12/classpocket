@@ -4,7 +4,7 @@ import {mkdirSync} from 'node:fs';
 const base=process.env.TEST_URL||'http://localhost:3003';
 const b=await chromium.launch({channel:'msedge',headless:true});const c=await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});const p=await c.newPage();const errors:string[]=[];p.on('pageerror',e=>errors.push(e.message));mkdirSync('test-results',{recursive:true});
 try{
- await p.goto(base);await p.locator('#post-lesson-beam-1').waitFor();assert.equal(await p.locator('.science-player').count(),10);assert.equal(await p.locator('.gizmo-post').count(),10);
+ await p.goto(base+'/?gizmo=lesson-beam-1');await p.locator('#post-lesson-beam-1').waitFor();assert.equal(await p.locator('.science-player').count(),10);assert.equal(await p.locator('.gizmo-post').count(),10);
  const first=p.locator('#post-lesson-beam-1');await p.screenshot({path:'test-results/science-home-mobile.png'});
  assert.equal(await first.getByRole('button',{name:'Run experiment',exact:true}).isDisabled(),true);
  const slider=first.getByLabel('Distance from pivot',{exact:true});await slider.focus();await p.keyboard.press('ArrowRight');await p.keyboard.press('ArrowRight');assert.equal(await slider.inputValue(),'3');

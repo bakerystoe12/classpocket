@@ -1,5 +1,8 @@
 # Absurd setup, real scientific decision
 
+**Current demo:** twenty varied interactive prompts, the five curated Studio media tools, Friends invitation rooms, and a timetable-controlled feed. See [TIMED_FEED.md](TIMED_FEED.md) for the current three-minute journey, public-link setup and implementation limits. Older topic-session and educational-reel notes below describe retained secondary workflows.
+
+
 ClassPocket's education loop is **hook → configure → predict → observe → explain → retrieve in a new situation**. The joke gives the scientific problem a memorable setting. Completing a mission requires applying its rule; remembering a character's name does not solve it.
 
 The default Home collection now contains ten authored physics experiments. Students move a force along a lever or change its strength, predict which way the beam turns, and run the experiment. Both the physical goal and the prediction must match. Feedback calculates both moments with units and explains the consequence. A larger force does not automatically win: perpendicular distance matters. The visible tipping animation illustrates the direction of net moment, not a quantitative dynamics simulation. The pivot is fixed and frictionless and beam weight is ignored.

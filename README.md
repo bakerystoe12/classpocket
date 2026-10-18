@@ -1,5 +1,8 @@
 # ClassPocket
 
+**Current demo:** twenty varied interactive prompts, the five curated Studio media tools, Friends invitation rooms, and a timetable-controlled feed. See [TIMED_FEED.md](TIMED_FEED.md) for the current three-minute journey, public-link setup and implementation limits. Older topic-session and educational-reel notes below describe retained secondary workflows.
+
+
 ## Educational reels revision
 
 The default Home feed is ten authored physics experiments: absurd hooks, force/distance controls, a prediction before the reveal, calculated consequences, causal feedback, and later recall/transfer. Chemistry has a separate ten-play atomic-charge session. Use PHYS02 and CHEM02; existing published classes remain unchanged. See [LEARNING_DESIGN.md](LEARNING_DESIGN.md) for exact scope and research references. Uploaded notes still use source-matching drafts, not automatically generated simulations.
