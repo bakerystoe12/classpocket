@@ -1,0 +1,2 @@
+# classpocket
+sym ai hackathon
