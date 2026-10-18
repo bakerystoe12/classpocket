@@ -15,6 +15,7 @@ The problem hypothesis comes from a founder-reported conversation with a profess
 - Local running app: http://localhost:3000
 - Topic-session entry: http://localhost:3000/study
 - Source: [rudecoder-web/SYM-AI, classpocket-mvp branch](https://github.com/rudecoder-web/SYM-AI/tree/classpocket-mvp). The original team plan is preserved in `docs/TEAM_PLAN.md`, and the branch retains the repository's existing history.
+- Team review: [pull request #1](https://github.com/rudecoder-web/SYM-AI/pull/1).
 - Public live URL: **not configured**. Deploy to a persistent Node host and test signed out on another device before submitting. `localhost` is not a public link.
 
 ## Scope Honesty Declaration

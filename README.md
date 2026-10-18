@@ -4,7 +4,7 @@ The running app is implemented in this branch. The team's original planning docu
 
 **New: focused topic sessions.** Open `/study` for the student topic feed or `/study/create` to upload/paste notes, review ten mission gizmos, and assign a class. Students finish the required ten or explicitly add same-topic practice. Read [TOPIC_SESSIONS.md](TOPIC_SESSIONS.md) and [HACKATHON_HANDOFF.md](HACKATHON_HANDOFF.md).
 
-**The primary app has been rebuilt as a social feed of ten playable gizmos.** Open `/` for Home, Studio, Activity, and Profile. Read [SOCIAL_MVP.md](SOCIAL_MVP.md) for the current product and verification details, and [the exact build prompt](../BUILD_PROMPT.md) for a reusable specification. No teacher login is required for the social app.
+**The primary app has been rebuilt as a social feed of ten playable gizmos.** Open `/` for Home, Studio, Activity, and Profile. Read [SOCIAL_MVP.md](SOCIAL_MVP.md) for the current product and verification details, and [the exact build prompt](BUILD_PROMPT.md) for a reusable specification. No teacher login is required for the social app.
 
 The classroom documentation below describes the earlier educational workflow, now available at `/classroom`.
 
@@ -15,14 +15,16 @@ A working classroom hackathon demo: **Turn your slides into a lesson students ca
 Requires Node.js 24 (uses built-in `node:sqlite`) and npm.
 
 ```powershell
-cd "C:\Users\munsh\Documents\Codex\2026-10-17\files-pasted-by-the-user-build\outputs\classpocket"
-npm install
+git clone --branch classpocket-mvp https://github.com/rudecoder-web/SYM-AI.git
+cd SYM-AI
+npm ci
+Copy-Item .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). For a production build, use `npm run build`, then `npm start`. The delivered demo is already built. Webpack is selected explicitly for reliable builds on this Windows host.
+Open [http://localhost:3000](http://localhost:3000). On macOS/Linux use `cp .env.example .env.local` instead of `Copy-Item`. For a production build, use `npm run build`, then `npm start`. Webpack is selected explicitly for reliable builds on the development host.
 
-Teacher sign in: **classpocket-demo**, configured in the included local `.env.local`. This is clearly labelled demo teacher access. Set a different `TEACHER_PASSWORD` before exposing the server beyond a trusted demonstration. If that variable is absent, the server generates a password, prints it on first use, and stores it in `data/teacher-password.txt`.
+The Git repository excludes `.env.local`. For the same teacher login used in the demo and automated journeys, set `TEACHER_PASSWORD=classpocket-demo` in your local copy before starting. This is clearly labelled demo teacher access. Use a different password outside a trusted demonstration. If that variable is blank or absent, the server generates a password, prints it on first use, and stores it in `data/teacher-password.txt`. No model key is needed for the social app or topic sessions.
 
 ## Teacher → student walkthrough
 

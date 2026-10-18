@@ -39,7 +39,7 @@ Guest profiles are tied to a browser cookie. There is no production login, cross
 
 Persistence uses `data/classpocket.sqlite`. Back up the database through SQLite facilities and use a persistent disk on a single Node host. Do not deploy this setup to an ephemeral filesystem or run multiple instances against separate local files. No public hosting, external database, model credential, or physical-phone network test is configured.
 
-The exact reusable build prompt is in `../BUILD_PROMPT.md`.
+The exact reusable build prompt is in `BUILD_PROMPT.md`.
 
 ## Verification
 
