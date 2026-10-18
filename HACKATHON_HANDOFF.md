@@ -14,7 +14,7 @@ The problem hypothesis comes from a founder-reported conversation with a profess
 
 - Local running app: http://localhost:3000
 - Topic-session entry: http://localhost:3000/study
-- Source: this Git repository and the provided source ZIP. A GitHub destination is awaiting the owner's repository URL; a local commit is not a pushed GitHub repository.
+- Source: [rudecoder-web/SYM-AI, classpocket-mvp branch](https://github.com/rudecoder-web/SYM-AI/tree/classpocket-mvp). The original team plan is preserved in `docs/TEAM_PLAN.md`, and the branch retains the repository's existing history.
 - Public live URL: **not configured**. Deploy to a persistent Node host and test signed out on another device before submitting. `localhost` is not a public link.
 
 ## Scope Honesty Declaration
@@ -41,7 +41,7 @@ The problem hypothesis comes from a founder-reported conversation with a profess
 
 - Friend scenarios and suggested creator personas are explicitly labelled demo content; no genuine friend network is claimed.
 - Arbitrary AI-generated game code, more educational engines, paid custom-game subscriptions, payments, parent accounts, production moderation, and production school identity/SSO.
-- Public hosting and the final GitHub push remain pending deployment/repository configuration. No public accessibility or horizontal scalability claim is made.
+- Public hosting remains pending deployment configuration. No public accessibility or horizontal scalability claim is made.
 
 ## Three-minute live demo outline
 
