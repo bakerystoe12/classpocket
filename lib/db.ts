@@ -4,7 +4,7 @@ import path from 'node:path';
 import { randomBytes,randomUUID } from 'node:crypto';
 import { Lesson,validateLesson } from './model';
 const dir=process.env.DATA_DIR||path.join(process.cwd(),'data');mkdirSync(dir,{recursive:true});
-const db=new DatabaseSync(path.join(dir,'classpocket.sqlite'));db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
+const db=new DatabaseSync(path.join(dir,'classpocket.sqlite'));db.exec('PRAGMA busy_timeout=10000;');db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
 CREATE TABLE IF NOT EXISTS lessons(id TEXT PRIMARY KEY, content TEXT NOT NULL, version INTEGER NOT NULL, updated TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS versions(id TEXT PRIMARY KEY,lesson TEXT NOT NULL,version INTEGER NOT NULL,content TEXT NOT NULL,created TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS publications(code TEXT PRIMARY KEY,lesson TEXT NOT NULL,version INTEGER NOT NULL,content TEXT NOT NULL,created TEXT NOT NULL);

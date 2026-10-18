@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import {physicsBriefs} from './physics-demo';
+import {worldSchema} from './creator-model';
 export const engines=['particles','lander','mower','factory','gravity','waves','orbit','racer','paint','springs','atom','mixer','ecosystem','fractal','circuit','beat','timeline','word','chance','solar'] as const;
 export const subjects=['Physics','Chemistry','Biology','Maths','Art','Music','History','English','Computing','General'] as const;
 export type Subject=typeof subjects[number];
-export const gizmoSchema=z.object({id:z.string().min(1).max(100),title:z.string().trim().min(1).max(70),caption:z.string().trim().min(1).max(240),engine:z.enum(engines),creator:z.string().min(1).max(40),accent:z.string().regex(/^#[0-9a-fA-F]{6}$/),speed:z.number().min(.25).max(3),published:z.boolean(),attribution:z.string().max(200),instructions:z.string().max(300),subject:z.enum(subjects).optional(),prompt:z.string().max(300).optional()});
+export const gizmoSchema=z.object({id:z.string().min(1).max(100),title:z.string().trim().min(1).max(70),caption:z.string().trim().min(1).max(240),engine:z.enum(engines),creator:z.string().min(1).max(40),accent:z.string().regex(/^#[0-9a-fA-F]{6}$/),speed:z.number().min(.25).max(3),published:z.boolean(),attribution:z.string().max(200),instructions:z.string().max(300),subject:z.enum(subjects).optional(),prompt:z.string().max(300).optional(),creatorName:z.string().max(40).optional(),world:worldSchema.optional()});
 export type Gizmo=z.infer<typeof gizmoSchema>;
 export const demoCreators=[{handle:'nova.exe',name:'Nova',color:'#af95fa',bio:'small worlds, big curiosity'},{handle:'orbitclub',name:'Orbit Club',color:'#69baff',bio:'somewhere between science and play'},{handle:'softsystems',name:'Soft Systems',color:'#a8c48c',bio:'little things that feel good'},{handle:'pixelmoss',name:'Moss',color:'#e9b56c',bio:'making tiny games after class'}];
 const originals:Gizmo[]=[

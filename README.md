@@ -1,5 +1,7 @@
 # ClassPocket
 
+**New: judge creator pilot.** Open `/make`, Studio, or **Try the creator demo** on the welcome. Choose a name, make a configurable Physics gizmo, share its immutable snapshot by link/QR, and let another participant adapt their own remix. Groq generation is available when a server key is configured; manual creation and sharing work without it. See [CREATOR_PILOT.md](CREATOR_PILOT.md) for scope, setup and verification.
+
 **Current Physics demo:** all twenty catalogue gizmos now teach Physics through their existing different interactions. A personalised schedule welcome appears before entering Home and again at a class-period change. See [PHYSICS_DEMO.md](PHYSICS_DEMO.md). Earlier mixed-subject catalogue descriptions below are historical; non-Physics timetable slots currently show a clear demo-content empty state.
 
 

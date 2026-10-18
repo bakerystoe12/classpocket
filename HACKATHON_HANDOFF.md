@@ -1,5 +1,7 @@
 # ClassPocket — judge handoff
 
+**Creator pilot:** the public demo now lets participants choose a name, create an experiment, share an immutable version by link/QR, and publish independent attributed remixes. Five new configurable experiment renderers change actual gravity, current, light, power or waves. The full two-browser journey passed on localhost and the actual public HTTPS URL, including ownership, version conflicts, private-parent isolation, revocation and unpublishing. See [CREATOR_PILOT.md](CREATOR_PILOT.md). Groq generation is implemented but has only been tested with simulated provider responses because no live key was configured at verification time. Manual creation works without a key. The existing SQLite hosting model has not been migrated to Vercel.
+
 **Current Physics demo:** all twenty catalogue gizmos now teach Physics through their existing different interactions. A personalised schedule welcome appears before entering Home and again at a class-period change. See [PHYSICS_DEMO.md](PHYSICS_DEMO.md). Earlier mixed-subject catalogue descriptions below are historical; non-Physics timetable slots currently show a clear demo-content empty state.
 
 

@@ -3,6 +3,7 @@ import {useEffect,useRef,useState} from 'react';
 import { RotateCcw, ChevronLeft,ChevronRight,ArrowUp,Wind,Plus,Palette,Pause,Play,Coins,Zap } from 'lucide-react';
 import type {Gizmo} from '@/lib/gizmos';
 import InteractiveWidgets from './InteractiveWidgets';
+import CreatorWorld from './CreatorWorld';
 type Dot={x:number;y:number;vx:number;vy:number;r:number;h:number;ox?:number;oy?:number};
 type Scene={distance:number;lastX:number;lastY:number;steerV:number;t:number;px:number;py:number;down:boolean;started:boolean;ended:string;dots:Dot[];bodies:Dot[];cut:Set<number>;ship:{x:number;y:number;vx:number;vy:number;a:number};fuel:number;cash:number;value:number;auto:number;dropped:number;phase:number;frozen:boolean;palette:number;score:number;car:number;target:number;launch:boolean;keys:Set<string>};
 const W=480,H=680;
@@ -63,4 +64,4 @@ function ClassicCanvas({gizmo:g,active=true,small=false}:{gizmo:Gizmo;active?:bo
 }
 
 const classic=['particles','lander','mower','factory','gravity','waves','orbit','racer','paint','springs'];
-export default function GizmoCanvas(props:{gizmo:Gizmo;active?:boolean;small?:boolean}){return classic.includes(props.gizmo.engine)?<ClassicCanvas {...props}/>:<InteractiveWidgets {...props}/>;}
+export default function GizmoCanvas(props:{gizmo:Gizmo;active?:boolean;small?:boolean}){return props.gizmo.world?<CreatorWorld {...props}/>:classic.includes(props.gizmo.engine)?<ClassicCanvas {...props}/>:<InteractiveWidgets {...props}/>;}
