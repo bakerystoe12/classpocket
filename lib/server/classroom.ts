@@ -57,7 +57,7 @@ export async function handle(actor:Actor|null,method:string,parts:string[],body:
  throw new HttpError(404,'Not found.');
 }
 async function generate(actor:Actor,l:Awaited<ReturnType<typeof lesson>>,body:Record<string,unknown>){
- const cfg=aiConfig();if(!cfg)throw new HttpError(503,'AI is not configured. Add GROQ_API_KEY on the server. Your source and draft are saved; use manual editing or the included sample.','ai-unconfigured');
+ const cfg=aiConfig('groq');if(!cfg)throw new HttpError(503,'This legacy lesson tool needs GROQ_API_KEY. Use Claude Studio for custom gizmos, or edit this lesson manually. Your source and draft are saved.','ai-unconfigured');
  if(body.version!==l.version)throw new HttpError(409,'Draft changed. Reload before generating.','stale');
  const requestId=randomUUID();const {data:quota,error:qe}=await adminClient().rpc('begin_generation',{p_actor:actor.id,p_request_id:requestId,p_kind:'lesson',p_model:cfg.model,p_prompt_chars:String(body.prompt||'').length,p_user_daily:cfg.userDaily,p_global_daily:cfg.globalDaily});
  if(qe)fromPg(qe);if(!(quota as {ok:boolean}).ok)throw new HttpError(429,'Today’s AI budget is used up. Manual editing still works.','quota');

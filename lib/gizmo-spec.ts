@@ -1,11 +1,11 @@
 import {z} from 'zod';
 import {jumpHeight,springLaunchSpeed,ohmsLaw,powerPerExit,planetGravity} from './physics-demo';
 import {worldSchema,type CreatorWorld} from './creator-model';
-// Versioned gizmo definitions. A definition only selects and configures application-owned renderers:
-// it can never carry code, markup or SVG. Owner IDs, publication state and database IDs are server-controlled
-// and live outside the definition.
+import {customProgramSchema,programIssues,type CustomProgram} from './custom-program';
+// Versioned definitions use app-owned renderers, or the explicit opaque-origin custom sandbox.
+// Owner IDs, publication state and database IDs are server-controlled and live outside the definition.
 export const GIZMO_SCHEMA_VERSION=2;
-export const engines=['particles','lander','mower','factory','gravity','waves','orbit','racer','paint','springs','atom','mixer','ecosystem','fractal','circuit','beat','timeline','word','chance','solar','jumper'] as const;
+export const engines=['particles','lander','mower','factory','gravity','waves','orbit','racer','paint','springs','atom','mixer','ecosystem','fractal','circuit','beat','timeline','word','chance','solar','jumper','custom'] as const;
 export type Engine=typeof engines[number];
 export const subjects=['Physics','Chemistry','Biology','Maths','Art','Music','History','English','Computing','General'] as const;
 export type Subject=typeof subjects[number];
@@ -17,6 +17,7 @@ type EngineSpec={name:string;params:Record<string,ParamSpec>;objects:readonly st
 const p=(label:string,unit:string,min:number,max:number,step:number,value:number,help:string):ParamSpec=>({label,unit,min,max,step,default:value,help});
 const g=(value:number)=>p('Gravity','m/s²',.5,30,.01,value,'Constant gravitational field strength');
 export const engineSpecs:Record<Engine,EngineSpec>={
+ custom:{name:'Custom interactive gizmo',uses:'a self-contained interactive program in an isolated browser sandbox',params:{},objects:[],metrics:{}},
  particles:{name:'Particle field',uses:'drag an attraction or repulsion field through glowing particles',params:{attraction:p('Field strength','relative',-2,2,.1,1,'Negative values repel'),damping:p('Damping','per frame',.9,.995,.001,.976,'Velocity kept each frame'),count:p('Particles','count',100,1200,50,800,'Number of particles')},objects:[],metrics:{}},
  lander:{name:'Lander',uses:'thrust and rotate a spacecraft to land gently on a pad',params:{gravity:g(1.62),thrust:p('Thrust acceleration','m/s²',1,40,.1,4.2,'Engine acceleration when firing'),fuel:p('Fuel','s of thrust',2,30,.5,8,'Total firing time available'),safeSpeed:p('Safe landing speed','m/s',.5,6,.1,2,'Maximum touchdown speed for a gentle landing'),padWidth:p('Pad width','m',8,40,1,23,'Landing pad width')},objects:[],metrics:{softLandings:{label:'Gentle landings',unit:'count'}}},
  mower:{name:'Work mower',uses:'drag a mower against a constant resistance and measure work',params:{force:p('Push force','N',1,200,1,20,'Constant force along the path')},objects:[],metrics:{work:{label:'Work done',unit:'J'},distance:{label:'Path length',unit:'m'}}},
@@ -43,7 +44,7 @@ const hex=z.string().regex(/^#[0-9a-fA-F]{6}$/);
 const text=(max:number)=>z.string().trim().max(max);
 export const provenanceSchema=z.object({kind:z.enum(['authored','template','manual','ai','remix']),provider:z.string().max(40).optional(),model:z.string().max(80).optional(),requestId:z.string().max(60).optional(),generatedAt:z.string().max(40).optional(),reviewed:z.boolean().default(false),remixOf:z.string().max(100).optional(),repaired:z.boolean().optional()});
 // `world` carries the creator pilot's five bounded experiment templates (rendered by CreatorWorld).
-const common={schemaVersion:z.literal(GIZMO_SCHEMA_VERSION),world:worldSchema.optional(),subject:z.enum(subjects),title:text(70).min(1),caption:text(240).min(1),objective:text(200).default(''),instructions:text(300).default(''),assumptions:z.array(text(240).min(1)).max(4).default([]),visual:z.object({accent:hex,character:z.enum(characters).default('none'),characterColour:hex.default('#f5a35c'),planet:z.enum(planets).default('none')}),feedback:z.object({success:text(140).default(''),retry:text(140).default('')}).default({success:'',retry:''}),difficulty:z.enum(['gentle','standard','tricky']).default('standard'),speed:z.number().min(.25).max(3).default(1),prompt:text(300).default(''),attribution:text(200).default(''),sources:z.array(z.object({title:text(120).min(1),page:z.number().int().positive().optional(),url:z.string().url().startsWith('https://').max(300).optional()})).max(3).default([]),provenance:provenanceSchema};
+const common={schemaVersion:z.literal(GIZMO_SCHEMA_VERSION),world:worldSchema.optional(),program:customProgramSchema.optional(),subject:z.enum(subjects),title:text(70).min(1),caption:text(240).min(1),objective:text(200).default(''),instructions:text(300).default(''),assumptions:z.array(text(240).min(1)).max(4).default([]),visual:z.object({accent:hex,character:z.enum(characters).default('none'),characterColour:hex.default('#f5a35c'),planet:z.enum(planets).default('none')}),feedback:z.object({success:text(140).default(''),retry:text(140).default('')}).default({success:'',retry:''}),difficulty:z.enum(['gentle','standard','tricky']).default('standard'),speed:z.number().min(.25).max(3).default(1),prompt:text(300).default(''),attribution:text(200).default(''),sources:z.array(z.object({title:text(120).min(1),page:z.number().int().positive().optional(),url:z.string().url().startsWith('https://').max(300).optional()})).max(3).default([]),provenance:provenanceSchema};
 function paramsSchema(e:Engine){return z.object(Object.fromEntries(Object.entries(engineSpecs[e].params).map(([k,s])=>[k,z.number().finite().min(s.min).max(s.max).default(s.default)]))).strict();}
 function variant(e:Engine){const spec=engineSpecs[e],keys=Object.keys(spec.params) as [string,...string[]],metrics=Object.keys(spec.metrics);
  return z.object({...common,engine:z.literal(e),params:paramsSchema(e).prefault({}),
@@ -51,7 +52,7 @@ function variant(e:Engine){const spec=engineSpecs[e],keys=Object.keys(spec.param
   controls:z.array(z.object({param:z.enum(keys),min:z.number().finite(),max:z.number().finite()})).max(4).default([]),
   challenge:metrics.length?z.object({metric:z.enum(metrics as [string,...string[]]),comparator:z.enum(['atLeast','atMost']),target:z.number().finite(),label:text(120).min(1)}).nullable().default(null):z.null().default(null)});}
 export const gizmoDefinitionSchema=z.discriminatedUnion('engine',engines.map(variant) as unknown as [ReturnType<typeof variant>,...ReturnType<typeof variant>[]]);
-export type GizmoDefinition={schemaVersion:2;world?:CreatorWorld;engine:Engine;subject:Subject;title:string;caption:string;objective:string;instructions:string;assumptions:string[];params:Record<string,number>;visual:{accent:string;character:typeof characters[number];characterColour:string;planet:typeof planets[number]};objects:{kind:string}[];controls:{param:string;min:number;max:number}[];challenge:{metric:string;comparator:'atLeast'|'atMost';target:number;label:string}|null;feedback:{success:string;retry:string};difficulty:'gentle'|'standard'|'tricky';speed:number;prompt:string;attribution:string;sources:{title:string;page?:number;url?:string}[];provenance:z.infer<typeof provenanceSchema>};
+export type GizmoDefinition={schemaVersion:2;world?:CreatorWorld;program?:CustomProgram;engine:Engine;subject:Subject;title:string;caption:string;objective:string;instructions:string;assumptions:string[];params:Record<string,number>;visual:{accent:string;character:typeof characters[number];characterColour:string;planet:typeof planets[number]};objects:{kind:string}[];controls:{param:string;min:number;max:number}[];challenge:{metric:string;comparator:'atLeast'|'atMost';target:number;label:string}|null;feedback:{success:string;retry:string};difficulty:'gentle'|'standard'|'tricky';speed:number;prompt:string;attribution:string;sources:{title:string;page?:number;url?:string}[];provenance:z.infer<typeof provenanceSchema>};
 // Rendered posts add server-controlled presentation fields.
 export type Gizmo=GizmoDefinition&{id:string;creator:string;creatorName?:string;published:boolean;owned?:boolean;version?:number;authored?:boolean;feedRank?:number;counts?:{like:number;save:number;repost:number;comment:number}};
 export function defaults(e:Engine){return Object.fromEntries(Object.entries(engineSpecs[e].params).map(([k,s])=>[k,s.default]));}
@@ -76,6 +77,10 @@ export type Issue={path:string;message:string};
 // Semantic checks beyond the schema: control ranges, reachable goals and physically sensible configurations.
 export function semanticIssues(d:GizmoDefinition):Issue[]{
  const issues:Issue[]=[],spec=engineSpecs[d.engine];
+ if(d.engine==='custom'&&!d.program)issues.push({path:'program',message:'Custom gizmos need a playable program.'});
+ if(d.engine!=='custom'&&d.program)issues.push({path:'program',message:'Programs are only allowed in the custom sandbox engine.'});
+ if(d.engine==='custom'&&d.world)issues.push({path:'world',message:'Custom gizmos cannot carry a trusted template world.'});
+ if(d.program)issues.push(...programIssues(d.program).map(message=>({path:'program',message})));
  d.controls.forEach((c,i)=>{const s=spec.params[c.param];if(!(c.min<c.max))issues.push({path:`controls.${i}`,message:`${s.label} needs a minimum below its maximum.`});if(c.min<s.min||c.max>s.max)issues.push({path:`controls.${i}`,message:`${s.label} must stay within ${s.min}–${s.max} ${s.unit}.`});if(d.params[c.param]<c.min||d.params[c.param]>c.max)issues.push({path:`controls.${i}`,message:`${s.label} starts outside its own control range.`});});
  if(d.world?.template==='jump'&&d.world.goalHeight>jumpHeight(d.world.launchSpeed,d.world.gravity)+1e-9)issues.push({path:'world.goalHeight',message:'Jump goal is unreachable. Lower the target or increase launch speed.'});
  if(new Set(d.controls.map(c=>c.param)).size!==d.controls.length)issues.push({path:'controls',message:'Each control may appear only once.'});
@@ -100,7 +105,7 @@ export function upgradeDefinition(input:unknown):GizmoDefinition{
 }
 // Diff of supported settings, used to explain what an edit actually changed.
 export function describeChanges(before:GizmoDefinition|null,after:GizmoDefinition){
- const out:string[]=[];if(!before)return [`Created a ${engineSpecs[after.engine].name} gizmo.`];
+ const out:string[]=[];if(before&&JSON.stringify(before.program)!==JSON.stringify(after.program))out.push('Changed the interactive program. Play it to check the new behaviour.');if(!before)return [`Created a ${engineSpecs[after.engine].name} gizmo.`];
  if(before.engine!==after.engine)out.push(`Changed the interaction from ${engineSpecs[before.engine].name} to ${engineSpecs[after.engine].name}.`);
  const spec=engineSpecs[after.engine].params;
  if(before.engine===after.engine)for(const [k,s] of Object.entries(spec))if(before.params[k]!==after.params[k])out.push(`${s.label}: ${before.params[k]} → ${after.params[k]} ${s.unit}`);

@@ -1,4 +1,6 @@
-# Deploying ClassPocket to Vercel with Supabase and Groq
+# Deploying ClassPocket to Vercel with Supabase and Claude or Groq
+
+**For custom Claude gizmos, follow [CLAUDE_SETUP.md](CLAUDE_SETUP.md) in addition to the Supabase/Vercel steps below.** Select `AI_PROVIDER=anthropic`, configure the server-only `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL`, and redeploy. `/api/studio` now declares `maxDuration=180`; enable Fluid Compute and a compatible function duration in Vercel. The Groq instructions below remain for the legacy template and classroom generators.
 
 These are one-time account steps that an adult administrator performs. A `git push` cannot create accounts, databases or credentials. Once these steps are done, every push to GitHub triggers a normal Vercel deployment. Never paste secrets into chat, issues or commits.
 

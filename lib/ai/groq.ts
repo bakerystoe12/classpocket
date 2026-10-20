@@ -2,7 +2,7 @@ import 'server-only';
 import type {AiConfig} from '@/lib/env';
 // Minimal client for Groq's OpenAI-compatible chat completions with strict JSON-schema output.
 // No automatic retries: callers decide on at most one repair attempt, and 429s surface to the user.
-export type ProviderFailure={ok:false;code:'timeout'|'rate-limited'|'refused'|'incomplete'|'invalid-json'|'schema-rejected'|'provider';message:string;retryAfter?:number};
+export type ProviderFailure={ok:false;code:'timeout'|'rate-limited'|'refused'|'incomplete'|'invalid-json'|'schema-rejected'|'provider';message:string;retryAfter?:number;usage?:{input:number;output:number}};
 export type ProviderResult={ok:true;json:unknown;usage:{input:number;output:number}}|ProviderFailure;
 export async function structured(cfg:AiConfig,{system,user,name,schema,strict=true,fetcher=fetch}:{system:string;user:string;name:string;schema:object;strict?:boolean;fetcher?:typeof fetch}):Promise<ProviderResult>{
  let res:Response;

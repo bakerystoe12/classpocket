@@ -1,5 +1,6 @@
 import 'server-only';
 import {randomBytes} from 'node:crypto';
+import {Script} from 'node:vm';
 import {z} from 'zod';
 import {gizmos as authored,demoCreators,templateById} from '@/lib/gizmos';
 import {learningGizmos} from '@/lib/learning-feed';
@@ -118,6 +119,7 @@ type Provenance=GizmoDefinition['provenance'];
 async function priorProvenance(actor:Actor,id:string):Promise<Provenance|null>{const {data}=await adminClient().from('gizmo_drafts').select('owner_id,definition->provenance').eq('id',id).maybeSingle();if(data&&data.owner_id!==actor.id)throw new HttpError(403,'Only the owner can edit this gizmo.','forbidden');return (data?.provenance as Provenance)||null;}
 export async function saveDefinition(actor:Actor,{id,definition,expectedVersion,provenance,note}:{id:string|null;definition:GizmoDefinition;expectedVersion:number;provenance:Provenance;note:string}){
  const key=id||newId();const def=parseDefinition({...definition,provenance:{...provenance,reviewed:false}});
+ if(def.program)try{new Script(def.program.javascript,{filename:'gizmo.js'});}catch{throw new HttpError(400,'This custom program has a JavaScript syntax error. Ask Claude to repair it.','program-syntax');}
  const {data,error}=await adminClient().rpc('save_gizmo_draft',{p_actor:actor.id,p_id:key,p_definition:def,p_schema_version:GIZMO_SCHEMA_VERSION,p_expected_version:id?expectedVersion:0,p_provenance:def.provenance,p_note:note});
  if(error)fromPg(error);return {id:key,version:data as number,definition:def};
 }

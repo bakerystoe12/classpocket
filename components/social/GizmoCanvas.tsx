@@ -4,6 +4,7 @@ import { RotateCcw, ChevronLeft,ChevronRight,ArrowUp,Wind,Plus,Palette,Pause,Pla
 import type {Gizmo} from '@/lib/gizmos';
 import {engineSpecs,controlRange} from '@/lib/gizmo-spec';
 import InteractiveWidgets from './InteractiveWidgets';
+import GeneratedGizmo from './GeneratedGizmo';
 import PlanetHop from './PlanetHop';
 import CreatorWorld from './CreatorWorld';
 export type MetricSink=(m:Record<string,number>)=>void;
@@ -72,12 +73,12 @@ const classic=['particles','lander','mower','factory','gravity','waves','orbit',
 // Params a widget already exposes through its own controls; everything else in `controls` gets a generic slider.
 const builtIn:Record<string,string[]>={atom:['electrons'],mixer:['red','green','blue'],ecosystem:['irradiance','area'],fractal:['depth','angle'],circuit:['voltage','resistance'],beat:['pitch','step'],solar:['planet']};
 function met(d:Gizmo,m:Record<string,number>){if(!d.challenge)return false;const v=m[d.challenge.metric];return v!==undefined&&(d.challenge.comparator==='atLeast'?v>=d.challenge.target-1e-9:v<=d.challenge.target+1e-9);}
-export default function GizmoCanvas({gizmo,active=true,small=false}:{gizmo:Gizmo;active?:boolean;small?:boolean}){
+export default function GizmoCanvas({gizmo,active=true,small=false,onRuntimeError}:{gizmo:Gizmo;active?:boolean;small?:boolean;onRuntimeError?:(message:string)=>void}){
  const key=JSON.stringify(gizmo.params),[live,setLive]=useState(gizmo.params),[metrics,setMetrics]=useState<Record<string,number>>({}),[open,setOpen]=useState(false);
  useEffect(()=>{setLive(gizmo.params);setMetrics({});},[key]);// eslint-disable-line react-hooks/exhaustive-deps
  const g={...gizmo,params:live},onMetric=(m:Record<string,number>)=>setMetrics(old=>({...old,...m}));
  const spec=engineSpecs[g.engine],tunable=g.controls.filter(c=>!(builtIn[g.engine]||[]).includes(c.param)),done=met(g,metrics);
- const inner=g.world?<CreatorWorld gizmo={g} active={active} small={small}/>:g.engine==='jumper'?<PlanetHop gizmo={g} active={active} small={small} onMetric={onMetric}/>:classic.includes(g.engine)?<ClassicCanvas gizmo={g} active={active} small={small} onMetric={onMetric}/>:<InteractiveWidgets gizmo={g} active={active} small={small} onMetric={onMetric}/>;
+ const inner=g.program?<GeneratedGizmo program={g.program} title={g.title} active={active} small={small} onRuntimeError={onRuntimeError}/>:g.world?<CreatorWorld gizmo={g} active={active} small={small}/>:g.engine==='jumper'?<PlanetHop gizmo={g} active={active} small={small} onMetric={onMetric}/>:classic.includes(g.engine)?<ClassicCanvas gizmo={g} active={active} small={small} onMetric={onMetric}/>:<InteractiveWidgets gizmo={g} active={active} small={small} onMetric={onMetric}/>;
  if(small)return inner;
  return <div className="gizmo-shell">{inner}
   {g.challenge&&<div className={`gizmo-goal ${done?'is-done':''}`} role="status"><strong>{done?'✓ Goal reached':'Goal'}</strong><span>{g.challenge.label}</span>{done&&g.feedback.success&&<small>{g.feedback.success}</small>}{!done&&metrics[g.challenge.metric]!==undefined&&<small>Now {Number(metrics[g.challenge.metric].toFixed(2))} {spec.metrics[g.challenge.metric]?.unit}{g.feedback.retry?' · '+g.feedback.retry:''}</small>}</div>}

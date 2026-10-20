@@ -11,11 +11,13 @@ export function supabaseConfig():SupabaseConfig|null{
 }
 export function secretKey(){const key=process.env.SUPABASE_SECRET_KEY?.trim();return key||null;}
 export function backendReady(){return !!supabaseConfig()&&!!secretKey();}
-export type AiConfig={apiKey:string;model:string;baseUrl:string;timeoutMs:number;maxOutputTokens:number;userDaily:number;guestDaily:number;globalDaily:number;maxPromptChars:number};
-export function aiConfig():AiConfig|null{
- const apiKey=process.env.GROQ_API_KEY?.trim();if(!apiKey||!flag(process.env.AI_ENABLED,true))return null;
- return {apiKey,model:process.env.GROQ_MODEL?.trim()||'openai/gpt-oss-20b',baseUrl:(process.env.GROQ_BASE_URL?.trim()||'https://api.groq.com/openai/v1').replace(/\/$/,''),
-  timeoutMs:int(process.env.AI_TIMEOUT_MS,25000,3000,55000),maxOutputTokens:int(process.env.AI_MAX_OUTPUT_TOKENS,2000,300,6000),
+export type AiConfig={provider?:'anthropic'|'groq';apiKey:string;model:string;baseUrl:string;timeoutMs:number;maxOutputTokens:number;userDaily:number;guestDaily:number;globalDaily:number;maxPromptChars:number};
+export function aiConfig(providerOverride?:'groq'|'anthropic'):AiConfig|null{
+ const provider=providerOverride||process.env.AI_PROVIDER?.trim()||(process.env.ANTHROPIC_API_KEY?.trim()?'anthropic':'groq');
+ if(!['anthropic','groq'].includes(provider)||!flag(process.env.AI_ENABLED,true))return null;
+ const claude=provider==='anthropic',apiKey=(claude?process.env.ANTHROPIC_API_KEY:process.env.GROQ_API_KEY)?.trim();if(!apiKey)return null;
+ return {provider:provider as 'anthropic'|'groq',apiKey,model:(claude?process.env.ANTHROPIC_MODEL:process.env.GROQ_MODEL)?.trim()||(claude?'claude-sonnet-5-5':'openai/gpt-oss-20b'),baseUrl:claude?'https://api.anthropic.com/v1':(process.env.GROQ_BASE_URL?.trim()||'https://api.groq.com/openai/v1').replace(/\/$/,''),
+  timeoutMs:int(process.env.AI_TIMEOUT_MS,claude?70000:25000,3000,claude?75000:55000),maxOutputTokens:int(process.env.AI_MAX_OUTPUT_TOKENS,claude?10000:2000,300,12000),
   userDaily:int(process.env.AI_USER_DAILY_LIMIT,20,0,1000),guestDaily:int(process.env.AI_GUEST_DAILY_LIMIT,5,0,1000),globalDaily:int(process.env.AI_GLOBAL_DAILY_LIMIT,300,0,100000),maxPromptChars:int(process.env.AI_MAX_PROMPT_CHARS,600,50,4000)};
 }
 export const demoMode=()=>flag(process.env.DEMO_MODE,false);

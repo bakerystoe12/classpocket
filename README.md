@@ -1,8 +1,10 @@
 # ClassPocket
 
-A social feed of miniature interactive science worlds whose recommendations follow a student's class timetable. Students play with twenty different Physics gizmos, describe and remix their own in Studio, and invite friends into saved snapshots. Teachers turn lesson notes into ten-mission topic sessions and manage class timetables.
+A social feed of interactive learning experiences whose recommendations follow a student's class timetable. The included catalogue has twenty Physics gizmos. Claude Studio can generate custom games, simulations, stories and creative toys in any supported school subject, then save, edit, publish and remix their independent versions. Teachers turn lesson notes into ten-mission topic sessions and manage class timetables.
 
-- **Status:** the code, database migrations, tests and docs for the Vercel + Supabase + Groq version are complete. They are verified against a local Supabase stack and a **mock** Groq endpoint. A live Vercel deployment and a live Groq call have **not** been verified yet because no Vercel, Supabase or Groq accounts were available while it was built. [FEATURE_STATUS.md](FEATURE_STATUS.md) lists exactly what is implemented, authored, AI-generated, mocked or future work.
+**Claude Studio setup:** open `/studio`, or select **Open Claude Studio** from the Studio tab. Set `AI_PROVIDER=anthropic`, `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL=claude-sonnet-5-5` on the server, alongside the required Supabase credentials. See [CLAUDE_SETUP.md](CLAUDE_SETUP.md) for billing, Vercel settings, pilot limits, verification and security boundaries. No live Anthropic call or hosted database write has been verified without the operator's credentials. Custom code is unreviewed content executed only in an opaque-origin browser frame; it never runs on the server.
+
+- **Status:** the prior Vercel/Supabase migration was tested against local Supabase and mock Groq. This branch adds Claude with separate simulated provider, persistence and browser checks; see [FEATURE_STATUS.md](FEATURE_STATUS.md) for the revision's actual verification. Live generation still needs the operator's API key and configured backend.
 - **Creator pilot:** open `/make` (or **Try the creator demo** on the welcome). Make a configurable Physics experiment, share an immutable snapshot by link/QR, let someone else remix it, publish to the showcase. See [CREATOR_PILOT.md](CREATOR_PILOT.md).
 - **Deploy:** [DEPLOYMENT.md](DEPLOYMENT.md) · **Demo:** [JUDGE_SCRIPT.md](JUDGE_SCRIPT.md) · **Original team plan (unchanged):** [docs/TEAM_PLAN.md](docs/TEAM_PLAN.md)
 
@@ -16,7 +18,7 @@ Redirecting some otherwise idle scrolling toward the current lesson is a product
 | Identity | Supabase Auth with the cookie-based `@supabase/ssr` integration (`proxy.ts` refreshes sessions). Guests use anonymous sign-in. Teachers are email/password accounts whose `teacher` role is granted only by an admin script. |
 | Data | Supabase Postgres ([supabase/migrations](supabase/migrations)): row-level security on every table, constraints and indexes, counter triggers, and atomic SQL functions for multi-row and role-sensitive writes. |
 | Files | Private Supabase Storage bucket `lesson-sources`. The browser uploads PDFs (up to 10 MB) directly with a signed upload token; the server extracts the text and then deletes the file. |
-| AI | Groq chat completions with strict JSON-schema output (`openai/gpt-oss-20b` by default), followed by independent Zod and semantic validation, at most one repair attempt, and durable daily quotas in Postgres. |
+| AI | Claude Messages API (`claude-sonnet-5-5`) for custom programs, format/source/syntax validation, at most one repair and durable Postgres quotas. Optional Groq JSON-schema configuration remains for trusted templates. AI-generated program behaviour and accuracy require review. |
 
 Key directories:
 
@@ -26,7 +28,7 @@ lib/gizmo-spec.ts    Versioned (v2) discriminated gizmo schema, per-engine param
 lib/physics-demo.ts  Tested formulas used by renderers, validators and the AI pipeline
 lib/rhythm.ts        Timetable validation and bell semantics shared by browser and server
 lib/server/*         Repositories (auth-checked, RLS-scoped) and the Studio generation pipeline
-lib/ai/*             Prompt screening, Groq client, model-output → definition conversion
+lib/ai/*             Prompt screening, Claude/Groq adapters, bounded repair, model-output conversion
 components/social/*  Feed, Studio builder, renderers (GizmoCanvas, InteractiveWidgets, PlanetHop)
 supabase/            config.toml for local development and SQL migrations
 scripts/             seed, admin:teacher, admin:revoke-teacher, import-sqlite

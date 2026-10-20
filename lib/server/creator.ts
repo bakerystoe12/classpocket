@@ -6,7 +6,7 @@ import {definitionFromProposal,proposalFromDefinition} from '@/lib/creator-defin
 import {gizmoDefinitionSchema,parseDefinition,GIZMO_SCHEMA_VERSION,type GizmoDefinition} from '@/lib/gizmo-spec';
 import {aiConfig} from '@/lib/env';
 import {screenPrompt} from '@/lib/ai/screen';
-import {structured} from '@/lib/ai/groq';
+import {structured} from '@/lib/ai/provider';
 import {adminClient} from '@/lib/supabase/server';
 import type {Actor} from './auth';
 import {HttpError,fromPg,invalid} from './http';
@@ -33,7 +33,7 @@ export async function state(actor:Actor){
  return {profile:me,
   drafts:(drafts||[]).map(d=>{const p=pubs?.find(x=>x.id===d.id);return {...(d.definition as GizmoDefinition),id:d.id,version:d.version,owned:true,published:!!p?.is_public&&p.published_version===d.version,creator:me.handle,creatorName:me.name};}),
   showcase:showcase||[],shares:(shares||[]).map(s=>({token:s.token,post:s.gizmo_id,version:s.version,visibility:s.visibility,revoked:s.revoked?1:0})),
-  ai:{available:!!cfg,provider:'Groq',model:cfg?.model||'openai/gpt-oss-20b'}};
+  ai:{available:!!cfg,provider:cfg?.provider==='anthropic'?'Claude':'Groq',model:cfg?.model||'openai/gpt-oss-20b'}};
 }
 export async function shared(actor:Actor,token:string){const {data,error}=await actor.supabase.rpc('creator_share',{p_token:token48.parse(token)});if(error)fromPg(error);return data;}
 async function aiVerified(actor:Actor,requestId:unknown){
@@ -78,9 +78,10 @@ async function generate(actor:Actor,b:Record<string,unknown>){
  const requestId=randomUUID();
  const {data:q,error}=await adminClient().rpc('begin_generation',{p_actor:actor.id,p_request_id:requestId,p_kind:'creator',p_model:cfg.model,p_prompt_chars:prompt.length,p_user_daily:actor.isAnonymous?cfg.guestDaily:cfg.userDaily,p_global_daily:cfg.globalDaily});
  if(error)fromPg(error);if(!(q as {ok:boolean}).ok)throw new HttpError(429,'The demo AI limit has been reached. Keep editing manually or try again later.','quota');
+ const {error:providerError}=await adminClient().from('generation_requests').update({provider:cfg.provider||'groq'}).eq('user_id',actor.id).eq('request_id',requestId);if(providerError)fromPg(providerError);
  const finish=(status:string,err:string|null,usage={input:0,output:0})=>adminClient().rpc('finish_generation',{p_actor:actor.id,p_request_id:requestId,p_status:status,p_error:err,p_input_tokens:usage.input,p_output_tokens:usage.output,p_gizmo:null});
  const r=await structured(cfg,{system:instructions,user:JSON.stringify({request:prompt,current}),name:'classpocket_world',schema:providerSchema()});
- if(!r.ok){await finish('failed',r.code);throw new HttpError(r.code==='rate-limited'?429:r.code==='timeout'?504:r.code==='refused'||r.code==='incomplete'?422:502,r.code==='rate-limited'?'Groq is at its current usage limit. Try again later or edit manually.':r.code==='timeout'?'AI did not respond in time. Your draft is unchanged; try again or edit manually.':'AI could not finish a supported gizmo. Your previous draft is unchanged.',`ai-${r.code}`,r.retryAfter?{retryAfter:r.retryAfter}:{});}
- try{const proposal=validateProposal(r.json);await finish('succeeded',null,r.usage);return {proposal,provider:'Groq',model:cfg.model,requestId};}
+ if(!r.ok){await finish('failed',r.code);throw new HttpError(r.code==='rate-limited'?429:r.code==='timeout'?504:r.code==='refused'||r.code==='incomplete'?422:502,r.code==='rate-limited'?'The AI provider is at its current usage limit. Try again later or edit manually.':r.code==='timeout'?'AI did not respond in time. Your draft is unchanged; try again or edit manually.':'AI could not finish a supported gizmo. Your previous draft is unchanged.',`ai-${r.code}`,r.retryAfter?{retryAfter:r.retryAfter}:{});}
+ try{const proposal=validateProposal(r.json);await finish('succeeded',null,r.usage);return {proposal,provider:cfg.provider==='anthropic'?'Claude':'Groq',model:cfg.model,requestId};}
  catch{await finish('failed','invalid-output',r.usage);throw new HttpError(422,'AI returned an invalid or unreachable experiment. Your previous draft is unchanged. Try a simpler request.','ai-invalid');}
 }

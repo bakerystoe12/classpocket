@@ -3,6 +3,8 @@ import {engines,engineSpecs,characters,planets,subjects,defaults,GIZMO_SCHEMA_VE
 import {planetGravity} from '@/lib/physics-demo';
 // The model fills a flat, strictly-typed form. The application merges it into a versioned definition and
 // validates it independently; numbers, units and formulas come from engineSpecs, never from model text.
+// Groq remains a bounded-template generator. Custom code is only produced by the Claude pipeline.
+const templateEngines=engines.filter(e=>e!=='custom');
 const allParams=[...new Set(engines.flatMap(e=>Object.keys(engineSpecs[e].params)))];
 const allObjects=[...new Set(engines.flatMap(e=>engineSpecs[e].objects))];
 const allMetrics=['none',...new Set(engines.flatMap(e=>Object.keys(engineSpecs[e].metrics)))];
@@ -10,7 +12,7 @@ const str={type:'string'},num={type:'number'},bool={type:'boolean'};
 const obj=(properties:Record<string,unknown>)=>({type:'object',additionalProperties:false,required:Object.keys(properties),properties});
 const arr=(items:unknown)=>({type:'array',items});
 export const outputJsonSchema=obj({
- refused:bool,refusalReason:str,engine:{type:'string',enum:[...engines]},title:str,caption:str,objective:str,instructions:str,assumptions:arr(str),
+ refused:bool,refusalReason:str,engine:{type:'string',enum:[...templateEngines]},title:str,caption:str,objective:str,instructions:str,assumptions:arr(str),
  params:arr(obj({name:{type:'string',enum:allParams},value:num})),
  visual:obj({accent:str,character:{type:'string',enum:[...characters]},characterColour:str,planet:{type:'string',enum:[...planets]}}),
  objects:arr({type:'string',enum:allObjects}),
@@ -18,7 +20,7 @@ export const outputJsonSchema=obj({
  challenge:obj({enabled:bool,metric:{type:'string',enum:allMetrics},comparator:{type:'string',enum:['atLeast','atMost']},target:num,label:str}),
  feedback:obj({success:str,retry:str}),difficulty:{type:'string',enum:['gentle','standard','tricky']},
  unsupported:arr(str),changeSummary:str});
-const outputSchema=z.object({refused:z.boolean(),refusalReason:z.string(),engine:z.enum(engines),title:z.string(),caption:z.string(),objective:z.string(),instructions:z.string(),assumptions:z.array(z.string()),
+const outputSchema=z.object({refused:z.boolean(),refusalReason:z.string(),engine:z.enum(templateEngines),title:z.string(),caption:z.string(),objective:z.string(),instructions:z.string(),assumptions:z.array(z.string()),
  params:z.array(z.object({name:z.string(),value:z.number()})),visual:z.object({accent:z.string(),character:z.enum(characters),characterColour:z.string(),planet:z.enum(planets)}),
  objects:z.array(z.string()),controls:z.array(z.object({param:z.string(),min:z.number(),max:z.number()})),challenge:z.object({enabled:z.boolean(),metric:z.string(),comparator:z.enum(['atLeast','atMost']),target:z.number(),label:z.string()}),
  feedback:z.object({success:z.string(),retry:z.string()}),difficulty:z.enum(['gentle','standard','tricky']),unsupported:z.array(z.string()),changeSummary:z.string()});
@@ -38,7 +40,7 @@ export function systemPrompt(focus?:Engine){
  'Colours are #RRGGBB hex. accent is the highlight colour; characterColour colours the character (e.g. orange #f28c28). Use character "none" and planet "none" when not relevant.',
  'Write title (≤60 chars), a fun one-line caption hook (≤200 chars), a learning objective naming the real physics idea, short how-to-play instructions, and 1–3 honest model assumptions. changeSummary says briefly what you configured or changed.',
  'Supported engines:',
- ...(focus?[capability(focus),...engines.filter(e=>e!==focus).map(e=>`${e} — ${engineSpecs[e].name}: ${engineSpecs[e].uses}.`)]:engines.map(capability)),
+ ...(focus?[capability(focus),...templateEngines.filter(e=>e!==focus).map(e=>`${e} — ${engineSpecs[e].name}: ${engineSpecs[e].uses}.`)]:templateEngines.map(capability)),
  ].join('\n');
 }
 // Strip the definition down to what the model needs; owner, IDs and provenance never leave the server.

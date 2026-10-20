@@ -2,7 +2,14 @@
 
 Legend: **Implemented** = working code backed by Supabase and covered by automated tests against a local Supabase stack · **Authored/demo** = hand-made content shipped in the repo · **AI-generated** = produced at runtime by the configured model · **Mocked in tests** = verified only against the mock provider · **Not yet verified** = needs real accounts · **Future** = not built.
 
-## Verification summary (this branch)
+## Claude revision: verification and scope
+
+- Adds `/studio`, Anthropic Messages/structured-output support, an explicit custom-program engine, browser-isolated execution, one validation repair, runtime repair requests, saved-version sharing and custom remix routing. Existing templates and Groq configuration remain supported.
+- Unit tests: 47 passing. Claude provider/persistence contracts: 6 passing with **simulated** Anthropic and Supabase transports. Type checking and production compilation pass without secrets.
+- Browser check: **pass**, with two independent mobile profiles, custom creation/play/editing, runtime repair, publish, private snapshots, independent remix, reload and parent/network sandbox boundaries, using simulated API responses. This does not certify live model quality, hosted Postgres RLS or school readiness.
+- No Anthropic API key, real hosted Supabase credentials or Docker stack was available for this revision. The inherited integration results below belong to the earlier migration, and were not rerun here. See [CLAUDE_SETUP.md](CLAUDE_SETUP.md).
+
+## Baseline migration verification (prior branch)
 
 | Check | Result |
 | --- | --- |
@@ -43,6 +50,7 @@ Legend: **Implemented** = working code backed by Supabase and covered by automat
 | Reporting posts | Implemented (storage only) | In-app moderation review is Future. |
 | Guardian / parent relationships | Future | |
 | Synchronised multiplayer | Future | |
-| Arbitrary AI code, mechanics, images or video | Future | Would need a separate sandboxed project. |
+| Custom AI code and mechanics | Implemented in Claude revision · simulated tests | Explicit custom engine, isolated browser iframe, source/syntax checks and bounded repair. No general guarantee of correctness or browser CPU/memory containment. Dedicated-origin hardening and independent security testing remain pre-launch work. |
+| Generated images or video | Future | Studio media samples remain authored; Claude text generation can draw inline shapes/Canvas but is not an image/video provider. |
 | CAPTCHA on guest creation | Future | DEPLOYMENT.md §1 explains the change needed. |
 | Measured learning or attention outcomes | Not claimed | |

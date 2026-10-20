@@ -9,6 +9,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/unit/*.test.ts",
+    "test:claude": "node --conditions=react-server --import tsx --test --test-concurrency=1 tests/contracts/*.test.ts",
+    "test:claude:browser": "tsx tests/browser/claude.ts",
     "test:integration": "tsx --test --test-concurrency=1 tests/integration/*.test.ts",
     "test:browser": "tsx tests/browser/run.ts",
     "db:start": "npx -y supabase@2 start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,mailpit,realtime",
